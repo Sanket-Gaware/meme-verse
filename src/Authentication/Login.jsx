@@ -93,11 +93,11 @@ const Login = () => {
       className="flex justify-center items-center min-h-screen p-4 bg-li"
     >
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
-        <div className="flex justify-center items-center mb-4">
+        <div className="flex-col justify-center items-center mb-4 text-center">
           <img
             src="/logo.png"
             alt="logo"
-            className="w-12 h-12 rounded-full mr-2"
+            className="w-12 h-12 rounded-full mx-auto"
           />
           <h2 className="text-xl font-bold text-[#E1306C] tracking-wide">
             Meme Verse
