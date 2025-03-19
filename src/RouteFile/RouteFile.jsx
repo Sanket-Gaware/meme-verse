@@ -11,6 +11,8 @@ const ForgotPassword = React.lazy(() =>
 const MainWrapper = React.lazy(() => import("../Pages/MainWrapper"));
 const Home = React.lazy(() => import("../Pages/Home"));
 const Explore = React.lazy(() => import("../Pages/Explore"));
+const Search = React.lazy(() => import("../Pages/SearchPage"));
+const Leaderboard = React.lazy(() => import("../Pages/Leaderboard"));
 
 const RouteFile = () => {
   const router = createBrowserRouter([
@@ -39,6 +41,14 @@ const RouteFile = () => {
           path: "/main/explore",
           element: <Explore />,
         },
+        {
+          path: "/main/search",
+          element: <Search />,
+        },
+        {
+          path: "/main/leaderboard",
+          element: <Leaderboard />,
+        },
       ],
     },
     // {
@@ -48,7 +58,11 @@ const RouteFile = () => {
   ]);
   return (
     <>
-      <Suspense fallback={<div>Loding...</div>}>
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center">Loding...</div>
+        }
+      >
         <RouterProvider router={router}></RouterProvider>
       </Suspense>
     </>

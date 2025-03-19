@@ -6,21 +6,37 @@ import { fetchMemes, fetchUsers } from "../Store/memeSlice";
 function Home() {
   const username = localStorage.getItem("username");
   const dispatch = useDispatch();
-  const { memes, users, loading, error } = useSelector((state) => state.meme);
+  const { memes, users, loading, error, likedMemes, comments } = useSelector(
+    (state) => state.meme
+  );
 
   useEffect(() => {
     dispatch(fetchMemes());
     dispatch(fetchUsers());
   }, [dispatch]);
 
-  if (loading) return <p>Loading memes...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading)
+    return (
+      <p className="flex items-center my-auto justify-center">
+        Loading memes...
+      </p>
+    );
+  if (error)
+    return (
+      <p className="flex items-center my-auto justify-center text-red-400">
+        Error: {error}
+      </p>
+    );
 
   const currentUser = users.filter((user) => user.username == username);
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 w-full">
       <div className="col-span-8 text-center overflow-y-scroll">
-        <PostedMemeCard memes={memes} />
+        <PostedMemeCard
+          memes={memes}
+          likedMemes={likedMemes}
+          comments={comments}
+        />
       </div>
       <div className="col-span-4 col border-l-1 border-gray-300">
         <div className="fixed top-0 hidden md:block">

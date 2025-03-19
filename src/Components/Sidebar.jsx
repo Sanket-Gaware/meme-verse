@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  CircleUserRound,
   CompassIcon,
   HeartIcon,
   HomeIcon,
@@ -37,11 +36,13 @@ function Sidebar() {
             <NavLink
               to="/main/home"
               className="flex gap-3 text-lg mb-10 cursor-pointer"
-              // onClick={() => navigate("/main/home")}
             >
               <HomeIcon /> Home
             </NavLink>
-            <div className="flex gap-3 text-lg mb-10">
+            <div
+              className="flex gap-3 text-lg mb-10 cursor-pointer"
+              onClick={() => navigate("/main/search")}
+            >
               <SearchIcon /> Search
             </div>
             <div
@@ -53,7 +54,10 @@ function Sidebar() {
             <div className="flex gap-3 text-lg mb-10">
               <UploadCloudIcon /> Upload
             </div>
-            <div className="flex gap-3 text-lg mb-10">
+            <div
+              className="flex gap-3 text-lg mb-10 cursor-pointer"
+              onClick={() => navigate("/main/leaderboard")}
+            >
               <HeartIcon /> Leaderboard
             </div>
             <div className="flex gap-3 text-lg mb-10">
@@ -76,10 +80,17 @@ function Sidebar() {
       {/* Bottom Navbar */}
       <div className="fixed bottom-0 w-full bg-white border-t border-gray-300 flex justify-around items-center md:hidden p-2 z-50 py-4">
         <HomeIcon className="w-6 h-6" onClick={() => navigate("/main/home")} />
-        <SearchIcon className="w-6 h-6" />
+        <SearchIcon
+          className="w-6 h-6"
+          onClick={() => navigate("/main/search")}
+        />
         <CompassIcon
           className="w-6 h-6"
           onClick={() => navigate("/main/explore")}
+        />
+        <HeartIcon
+          className="w-6 h-6"
+          onClick={() => navigate("/main/leaderboard")}
         />
         <UploadCloudIcon className="w-6 h-6" />
         <img className="h-7 w-7 rounded-full" src={currentUser[0]?.profile} />

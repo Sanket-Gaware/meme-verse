@@ -38,8 +38,32 @@ const memeSlice = createSlice({
   initialState: {
     memes: [],
     users: [],
+    likedMemes: ["119215120", "322841258", "188390779", "247375501"],
+    comments: {
+      [221578498]: ["awsome", "Nice one"],
+      [252758727]: ["thisone is my fav"],
+      [4087833]: ["Die,Die,Die....!"],
+    },
     loading: false,
     error: null,
+  },
+  reducers: {
+    likeMeme: (state, action) => {
+      const memeId = action.payload;
+      if (state.likedMemes.includes(memeId)) {
+        // Toggle (unlike)
+        state.likedMemes = state.likedMemes.filter((id) => id !== memeId);
+      } else {
+        state.likedMemes.push(memeId);
+      }
+    },
+    addComment: (state, action) => {
+      const { memeId, comment } = action.payload;
+      if (!state.comments[memeId]) {
+        state.comments[memeId] = [];
+      }
+      state.comments[memeId].push(comment);
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -69,5 +93,5 @@ const memeSlice = createSlice({
       });
   },
 });
-
+export const { likeMeme, addComment } = memeSlice.actions;
 export default memeSlice.reducer;
