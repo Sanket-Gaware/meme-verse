@@ -37,12 +37,20 @@ const PostedMemeCard = ({ memes, likedMemes, comments }) => {
     }
   };
 
+  //for comments to do not get long
+  const formatNumber = (num) => {
+    if (num >= 1e9) return (num / 1e9).toFixed(1).replace(/\.0$/, "") + "B";
+    if (num >= 1e6) return (num / 1e6).toFixed(1).replace(/\.0$/, "") + "M";
+    if (num >= 1e3) return (num / 1e3).toFixed(1).replace(/\.0$/, "") + "k";
+    return num;
+  };
+
   return (
     <div>
       {memes.map((meme) => {
         const isLiked = likedMemes.includes(meme.id);
         const memeComments = comments[meme.id] || [];
-
+        // console.log("Coments=>" + memeComments);
         return (
           <div
             key={meme.id}
@@ -58,7 +66,7 @@ const PostedMemeCard = ({ memes, likedMemes, comments }) => {
                 <div>
                   <h2 className="font-semibold text-gray-900">{meme.name}</h2>
                   <p className="text-sm text-gray-500">Meme ID: {meme.id}</p>
-                </div> 
+                </div>
               </div>
             </div>
 
@@ -85,14 +93,27 @@ const PostedMemeCard = ({ memes, likedMemes, comments }) => {
                   }`}
                   onClick={() => handleLike(meme.id)}
                 >
+                  {/* whether a meme likd or not    */}
                   <Heart fill={isLiked ? "red" : "none"} />
                 </button>
-                <button
-                  className="hover:text-blue-500 transition"
-                  onClick={() => toggleCommentBox(meme.id)}
-                >
-                  <MessageCircle />
-                </button>
+                {/* counting comments */}
+                <div class="relative inline-flex">
+                  <button
+                    className="hover:text-blue-500 transition"
+                    onClick={() => toggleCommentBox(meme.id)}
+                  >
+                    <MessageCircle />
+                  </button>
+                  <span
+                    className={`${
+                      comments[meme.id]?.length > 0
+                        ? "absolute top-0.9 right-0.5 grid max-h-[25px] min-w-[23px] translate-x-2/4 -translate-y-2/4 place-items-center rounded-full bg-sky-600 py-1 px-1 text-xs text-white border border-white"
+                        : "hidden"
+                    }`}
+                  >
+                    {formatNumber(comments[meme.id]?.length)}
+                  </span>
+                </div>
                 <button className="hover:text-green-500 transition">
                   <Share2Icon />
                 </button>
