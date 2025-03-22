@@ -13,6 +13,7 @@ const Home = React.lazy(() => import("../Pages/Home"));
 const Explore = React.lazy(() => import("../Pages/Explore"));
 const Search = React.lazy(() => import("../Pages/SearchPage"));
 const Leaderboard = React.lazy(() => import("../Pages/Leaderboard"));
+const Profile = React.lazy(() => import("../Pages/Profile"));
 
 const RouteFile = () => {
   const router = createBrowserRouter([
@@ -48,6 +49,10 @@ const RouteFile = () => {
         {
           path: "/main/leaderboard",
           element: <Leaderboard />,
+        },
+        {
+          path: "/main/profile",
+          element: <Profile />,
         },
       ],
     },

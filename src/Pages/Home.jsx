@@ -67,7 +67,9 @@ function Home() {
                       <p className="text-sm tracking-wider font-semibold">
                         {user.username}
                       </p>
-                      <p className="text-sm text-gray-500">{user.fullname}</p>
+                      <p className="text-sm text-gray-500 dark:text-red-500">
+                        {user.fullname}
+                      </p>
                     </div>
                   </div>
                   <div className="">

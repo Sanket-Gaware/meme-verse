@@ -22,7 +22,7 @@ function Sidebar() {
     toast.custom((t) => (
       <div
         className={`${
-          t.visible ? "animate-enter" : "animate-leave" 
+          t.visible ? "animate-enter" : "animate-leave"
         } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-gray-300 ring-opacity-5`}
       >
         <div className="flex-1 w-0 p-4">
@@ -30,15 +30,15 @@ function Sidebar() {
             <div className="flex-shrink-0 pt-0.5">
               <img
                 className="h-10 w-10 rounded-full"
-                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixqx=6GHAjsWpt9&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80"
+                src={currentUser[0]?.profile}
                 alt=""
               />
             </div>
             <div className="ml-3 flex-1">
-              <p className="text-sm font-medium text-gray-900"></p>
-              <p className="mt-1 text-sm text-gray-500">
-                Sure! 8:30pm works great!
+              <p className="text-sm text-gray-900 font-bold">
+                {currentUser[0]?.fullname}
               </p>
+              <p className="mt-1 text-sm text-gray-500">See you next time 👋</p>
             </div>
           </div>
         </div>
@@ -57,13 +57,6 @@ function Sidebar() {
       </div>
     ));
   };
-
-  // function Logout() {
-  //   if (showLogoutToast()) {
-  //     localStorage.removeItem("Token");
-  //     navigate("/");
-  //   }
-  // }
 
   return (
     <>
@@ -137,7 +130,12 @@ function Sidebar() {
           onClick={() => navigate("/main/leaderboard")}
         />
         <UploadCloudIcon className="w-6 h-6" />
-        <img className="h-7 w-7 rounded-full" src={currentUser[0]?.profile} />
+
+        <img
+          className="h-7 w-7 rounded-full"
+          onClick={() => navigate("/main/profile")}
+          src={currentUser[0]?.profile}
+        />
       </div>
     </>
   );
