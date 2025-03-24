@@ -9,11 +9,14 @@ function Home() {
   const { memes, users, loading, error, likedMemes, comments } = useSelector(
     (state) => state.meme
   );
-
+  console.log(
+    "All memes:",
+    useSelector((state) => state.meme.memes)
+  );
   useEffect(() => {
     dispatch(fetchMemes());
     dispatch(fetchUsers());
-  }, [dispatch]);
+  }, []);
 
   if (loading)
     return (

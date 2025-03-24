@@ -14,6 +14,7 @@ const Explore = React.lazy(() => import("../Pages/Explore"));
 const Search = React.lazy(() => import("../Pages/SearchPage"));
 const Leaderboard = React.lazy(() => import("../Pages/Leaderboard"));
 const Profile = React.lazy(() => import("../Pages/Profile"));
+const UploadMeme = React.lazy(() => import("../Pages/UploadMeme"));
 
 const RouteFile = () => {
   const router = createBrowserRouter([
@@ -53,6 +54,10 @@ const RouteFile = () => {
         {
           path: "/main/profile",
           element: <Profile />,
+        },
+        {
+          path: "/main/upload",
+          element: <UploadMeme />,
         },
       ],
     },

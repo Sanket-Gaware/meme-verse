@@ -64,6 +64,12 @@ const memeSlice = createSlice({
       }
       state.comments[memeId].push(comment);
     },
+    setMemes: (state, action) => {
+      state.memes = action.payload;
+    },
+    addMeme: (state, action) => {
+      state.memes = [action.payload, ...state.memes];
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -93,5 +99,5 @@ const memeSlice = createSlice({
       });
   },
 });
-export const { likeMeme, addComment } = memeSlice.actions;
+export const { likeMeme, addComment, setMemes, addMeme } = memeSlice.actions;
 export default memeSlice.reducer;

@@ -30,7 +30,11 @@ function Sidebar() {
             <div className="flex-shrink-0 pt-0.5">
               <img
                 className="h-10 w-10 rounded-full"
-                src={currentUser[0]?.profile}
+                src={
+                  currentUser != ""
+                    ? currentUser[0]?.profile
+                    : "https://img.freepik.com/free-vector/user-circles-set_78370-4704.jpg?t=st=1742805601~exp=1742809201~hmac=64f7a109cb501fd22d07bf68bfef0d9142a1d68fad1b2c09189645fc012302b2&w=740"
+                }
                 alt=""
               />
             </div>
@@ -69,43 +73,56 @@ function Sidebar() {
           <div className="px-10 mt-10">
             <NavLink
               to="/main/home"
-              className="flex gap-3 text-lg mb-10 cursor-pointer"
+              className="flex gap-3 text-lg mb-10 cursor-pointer hover:text-blue-800"
             >
               <HomeIcon /> Home
             </NavLink>
             <NavLink
               to="/main/search"
-              className="flex gap-3 text-lg mb-10 cursor-pointer"
+              className="flex gap-3 text-lg mb-10 cursor-pointer  hover:text-blue-800"
               // onClick={() => navigate("/main/search")}
             >
               <SearchIcon /> Search
             </NavLink>
             <NavLink
               to="/main/explore"
-              className="flex gap-3 text-lg mb-10 cursor-pointer"
+              className="flex gap-3 text-lg mb-10 cursor-pointer  hover:text-blue-800"
               // onClick={() => navigate("/main/explore")}
             >
               <CompassIcon /> Explore
             </NavLink>
-            <NavLink to="/main/upload" className="flex gap-3 text-lg mb-10">
+            <NavLink
+              to="/main/upload"
+              className="flex gap-3 text-lg mb-10  hover:text-blue-800"
+            >
               <UploadCloudIcon /> Upload
             </NavLink>
             <NavLink
               to="/main/leaderboard"
-              className="flex gap-3 text-lg mb-10 cursor-pointer"
+              className="flex gap-3 text-lg mb-10 cursor-pointer  hover:text-blue-800"
               // onClick={() => navigate("/main/leaderboard")}
             >
               <HeartIcon /> Leaderboard
             </NavLink>
-            <div className="flex gap-3 text-lg mb-10">
+            {/* <div className="flex gap-3 text-lg mb-10">
               <MoonIcon /> Dark Mode
-            </div>
-            <NavLink to="/main/profile" className="flex gap-3 text-lg mb-10">
-              <img className="h-7 rounded-full" src={currentUser[0]?.profile} />
+            </div> */}
+            <NavLink
+              to="/main/profile"
+              className="flex gap-3 text-lg mb-10  hover:text-blue-800"
+            >
+              <img
+                className="h-7 rounded-full"
+                src={
+                  currentUser != ""
+                    ? currentUser[0]?.profile
+                    : "https://img.freepik.com/free-vector/user-circles-set_78370-4704.jpg?t=st=1742805601~exp=1742809201~hmac=64f7a109cb501fd22d07bf68bfef0d9142a1d68fad1b2c09189645fc012302b2&w=740"
+                }
+              />
               Profile
             </NavLink>
             <div
-              className="flex gap-3 text-lg mb-10 cursor-pointer"
+              className="flex gap-3 text-lg mb-10 cursor-pointer  hover:text-red-600"
               onClick={showLogoutToast}
             >
               <LogOut /> Logout
@@ -115,7 +132,7 @@ function Sidebar() {
       </div>
 
       {/* Bottom Navbar */}
-      <div className="fixed bottom-0 w-full bg-white border-t border-gray-300 flex justify-around items-center md:hidden p-2 z-50 py-4">
+      <div className="fixed bottom-0 w-full bg-white border-t border-gray-300 flex justify-around items-center md:hidden p-2 z-50 py-2">
         <HomeIcon className="w-6 h-6" onClick={() => navigate("/main/home")} />
         <SearchIcon
           className="w-6 h-6"
@@ -129,12 +146,19 @@ function Sidebar() {
           className="w-6 h-6"
           onClick={() => navigate("/main/leaderboard")}
         />
-        <UploadCloudIcon className="w-6 h-6" />
 
+        <UploadCloudIcon
+          className="w-6 h-6"
+          onClick={() => navigate("/main/upload")}
+        />
         <img
           className="h-7 w-7 rounded-full"
           onClick={() => navigate("/main/profile")}
-          src={currentUser[0]?.profile}
+          src={
+            currentUser != ""
+              ? currentUser[0]?.profile
+              : "https://img.freepik.com/free-vector/user-circles-set_78370-4704.jpg?t=st=1742805601~exp=1742809201~hmac=64f7a109cb501fd22d07bf68bfef0d9142a1d68fad1b2c09189645fc012302b2&w=740"
+          }
         />
       </div>
     </>
