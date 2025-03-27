@@ -16,7 +16,7 @@ function Sidebar() {
   const navigate = useNavigate();
   const username = localStorage.getItem("username");
   const { users } = useSelector((state) => state.meme);
-  const currentUser = users.filter((user) => user.username == username);
+  const currentUser = users?.filter((user) => user.username == username);
 
   const showLogoutToast = () => {
     toast.custom((t) => (

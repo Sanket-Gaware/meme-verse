@@ -2,12 +2,26 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 // Async thunk to fetch memes
+export const postMeme = createAsyncThunk(
+  "memes/postMeme",
+  async (formData, { rejectWithValue }) => {
+    const POST_MEME_URL = import.meta.env.VITE_POST_MEME_URL;
+    try {
+      const response = await axios.post(`${POST_MEME_URL}`, formData);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 export const fetchMemes = createAsyncThunk(
   "memes/fetchMemes",
   async (_, { rejectWithValue }) => {
+    const GET_MEME_URL = import.meta.env.VITE_GET_MEME_URL;
     try {
-      const response = await axios.get("https://api.imgflip.com/get_memes");
-      return response.data.data.memes; // Adjust based on your API response structure
+      const response = await axios.get(`${GET_MEME_URL}`);
+      return response.data.data.memes;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -17,16 +31,15 @@ export const fetchMemes = createAsyncThunk(
 export const fetchUsers = createAsyncThunk(
   "users/fetchUsers",
   async (_, { rejectWithValue }) => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    // console.log("env=>", import.meta.env);
     try {
-      const response = await axios.get(
-        "https://node-js-view-point.onrender.com/api/users/",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("Token")}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL}api/users/`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("Token")}`,
+          "Content-Type": "application/json",
+        },
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.message);

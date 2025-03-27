@@ -1,17 +1,15 @@
 import React, { useState } from "react";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { addMeme } from "../Store/memeSlice";
+import { addMeme, postMeme } from "../Store/memeSlice";
 
 const UploadMeme = () => {
   const [title, setTitle] = useState("");
+  const [caption, setCaption] = useState("");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-
-  const imgbbAPIKey = "50621e1806b23babed0c9cbc755a592c";
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -20,7 +18,7 @@ const UploadMeme = () => {
   };
 
   const handleUpload = async () => {
-    if (!title || !image) {
+    if (!title || !image || !caption) {
       toast.error("Please enter a title and select an image!");
       return;
     }
@@ -30,10 +28,11 @@ const UploadMeme = () => {
     formData.append("image", image);
 
     try {
-      const res = await axios.post(
-        `https://api.imgbb.com/1/upload?key=${imgbbAPIKey}`,
-        formData
-      );
+      //   const res = await axios.post(
+      //     `https://api.imgbb.com/1/upload?key=${imgbbAPIKey}`,
+      //     formData
+      //   );
+      const res = await dispatch(postMeme(formData)).unwrap(); //by using unwrap we can handle errors properly
 
       const imageUrl = res.data.data.url;
 
@@ -69,7 +68,7 @@ const UploadMeme = () => {
         <label className="block font-semibold mb-1">Meme Title</label>
         <input
           type="text"
-          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400"
+          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-0"
           placeholder="Enter meme title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -82,7 +81,17 @@ const UploadMeme = () => {
           type="file"
           accept="image/*"
           onChange={handleImageChange}
-          className="w-full border border-gray-400 rounded-lg p-1"
+          className="w-full border-2 border-gray-200 rounded-lg p-2 hover:border-sky-400 cursor-pointer"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block font-semibold mb-1">Meme Caption</label>
+        <input
+          type="text"
+          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-0"
+          placeholder="Enter meme caption"
+          value={title}
+          onChange={(e) => setCaption(e.target.value)}
         />
       </div>
 

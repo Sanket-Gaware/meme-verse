@@ -74,7 +74,7 @@ const Profile = () => {
   return (
     <div className="max-w-4xl mx-auto p-4">
       {/* Profile Header */}
-      <div className="absolute right-0 z-50 flex md:hidden justify-end ">
+      <div className="absolute right-0 z-50 flex md:hidden justify-end pr-2">
         <button
           onClick={showLogoutToast}
           className="flex gap-1 items-center font-bold text-red-400 border text-sm border-red-200 p-2 px-3 rounded-lg cursor-pointer hover:border-red-500"

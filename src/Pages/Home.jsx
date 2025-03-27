@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import PostedMemeCard from "../Components/PostedMemeCard";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMemes, fetchUsers } from "../Store/memeSlice";
-
+const Loader = React.lazy(() => import("../Components/Loader"));
 function Home() {
   const username = localStorage.getItem("username");
   const dispatch = useDispatch();
@@ -18,12 +18,7 @@ function Home() {
     dispatch(fetchUsers());
   }, []);
 
-  if (loading)
-    return (
-      <p className="flex items-center my-auto justify-center">
-        Loading memes...
-      </p>
-    );
+  if (loading) return <Loader />;
   if (error)
     return (
       <p className="flex items-center my-auto justify-center text-red-400">
