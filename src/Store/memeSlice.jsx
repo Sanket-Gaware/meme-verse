@@ -46,6 +46,22 @@ export const fetchUsers = createAsyncThunk(
     }
   }
 );
+export const login = createAsyncThunk(
+  "users/login",
+  async ({ username, password }, { rejectWithValue }) => {
+    const Base_Url = import.meta.env.VITE_BASE_URL;
+    try {
+      const response = await axios.post(`${Base_Url}api/auth/login/`, {
+        username,
+        password,
+      });
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const memeSlice = createSlice({
   name: "memes",
   initialState: {

@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { login } from "../Store/memeSlice";
 
 const validationSchema = yup.object({
   email: yup
@@ -22,6 +23,7 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (localStorage.getItem("Token")) {
@@ -29,32 +31,31 @@ const Login = () => {
     }
   }, []);
 
-  const login = (values) => {
+  const handleLogin = async (values) => {
     setErrorMessage("");
-    axios
-      .post("https://node-js-view-point.onrender.com/api/auth/login", {
-        username: values.email,
-        password: values.password,
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          toast.success("Login successful!");
-          localStorage.setItem("Token", response.data.token);
-          localStorage.setItem("RefreshToken", response.data.refresh);
-          localStorage.setItem("username", values.email);
-          localStorage.setItem("Email", values.Username);
-          navigate("/main/home");
-        }
-      })
-      .catch((error) => {
-        if (error.response) {
-          setErrorMessage(error.response.data.message || "Login failed!");
-          toast.error(error.response.data.message);
-        } else {
-          setErrorMessage("Login failed!");
-          toast.error("Login failed!");
-        }
-      });
+    const credentials = {
+      username: values.email,
+      password: values.password,
+    };
+    try {
+      const response = await dispatch(login(credentials)).unwrap();
+      if (response.status === 200) {
+        toast.success("Login successful!");
+        localStorage.setItem("Token", response.data.token);
+        localStorage.setItem("RefreshToken", response.data.refresh);
+        localStorage.setItem("username", values.email);
+        localStorage.setItem("Email", values.Username);
+        navigate("/main/home");
+      }
+    } catch (error) {
+      if (error.response) {
+        setErrorMessage(error.response.data.message || "Login failed!");
+        toast.error(error.response.data.message);
+      } else {
+        setErrorMessage("Login failed!");
+        toast.error("Login failed!");
+      }
+    }
   };
 
   const formik = useFormik({
@@ -63,7 +64,7 @@ const Login = () => {
       password: "Sanket@12345",
     },
     validationSchema: validationSchema,
-    onSubmit: login,
+    onSubmit: handleLogin,
   });
 
   return (
