@@ -73,7 +73,7 @@ const PostedMemeCard = ({ memes, likedMemes, comments }) => {
             <img
               src={meme.url}
               alt={meme.name}
-              className="w-full h-auto object-cover"
+              className="w-full h-90 object-cover"
             />
 
             <div className="p-4 space-y-2">
@@ -97,7 +97,7 @@ const PostedMemeCard = ({ memes, likedMemes, comments }) => {
                   <Heart fill={isLiked ? "red" : "none"} />
                 </button>
                 {/* counting comments */}
-                <div class="relative inline-flex">
+                <div className="relative inline-flex">
                   <button
                     className="hover:text-blue-500 transition"
                     onClick={() => toggleCommentBox(meme.id)}

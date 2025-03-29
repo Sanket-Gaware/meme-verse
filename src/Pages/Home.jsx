@@ -9,10 +9,6 @@ function Home() {
   const { memes, users, loading, error, likedMemes, comments } = useSelector(
     (state) => state.meme
   );
-  console.log(
-    "All memes:",
-    useSelector((state) => state.meme.memes)
-  );
   useEffect(() => {
     dispatch(fetchMemes());
     dispatch(fetchUsers());
@@ -55,7 +51,7 @@ function Home() {
             {users.map((user, i) => {
               if (user.username === username) return null; // Don't display the current user in the list
               return (
-                <div kry={i} className="flex justify-between items-center my-3">
+                <div key={i} className="flex justify-between items-center my-3">
                   <div className="flex gap-3 items-center">
                     <img
                       className="h-12 w-12 rounded-full aspect-square"

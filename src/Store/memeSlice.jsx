@@ -20,7 +20,7 @@ export const fetchMemes = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     const GET_MEME_URL = import.meta.env.VITE_GET_MEME_URL;
     try {
-      const response = await axios.get(`${GET_MEME_URL}`);
+      const response = await axios.get(GET_MEME_URL);
       return response.data.data.memes;
     } catch (error) {
       return rejectWithValue(error.message);
