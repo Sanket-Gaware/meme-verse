@@ -32,32 +32,32 @@ const RouteFile = () => {
       element: <ForgotPassword />,
     },
     {
-      path: "/main",
+      path: "/",
       element: <MainWrapper />,
       children: [
         {
           index: true,
-          path: "/main/home",
+          path: "home",
           element: <Home />,
         },
         {
-          path: "/main/explore",
+          path: "explore",
           element: <Explore />,
         },
         {
-          path: "/main/search",
+          path: "search",
           element: <Search />,
         },
         {
-          path: "/main/leaderboard",
+          path: "leaderboard",
           element: <Leaderboard />,
         },
         {
-          path: "/main/profile",
+          path: "profile",
           element: <Profile />,
         },
         {
-          path: "/main/upload",
+          path: "upload",
           element: <UploadMeme />,
         },
       ],
