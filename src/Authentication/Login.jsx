@@ -42,9 +42,7 @@ const Login = () => {
       if (response.status === 200) {
         toast.success("Login successful!");
         localStorage.setItem("Token", response.data.token);
-        localStorage.setItem("RefreshToken", response.data.refresh);
         localStorage.setItem("username", values.email);
-        localStorage.setItem("Email", values.Username);
         navigate("/main/home");
       }
     } catch (error) {
