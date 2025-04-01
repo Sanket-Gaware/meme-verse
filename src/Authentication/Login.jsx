@@ -27,7 +27,8 @@ const Login = () => {
 
   useEffect(() => {
     if (localStorage.getItem("Token")) {
-      navigate(`${localStorage.getItem("LastVisitedPath")}`);
+      const LastVisitedPath = localStorage.getItem("LastVisitedPath");
+      LastVisitedPath !== "" ? navigate(LastVisitedPath) : navigate("/home");
     }
   }, []);
 

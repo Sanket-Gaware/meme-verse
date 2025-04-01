@@ -16,6 +16,7 @@ const Leaderboard = React.lazy(() => import("../Pages/Leaderboard"));
 const Profile = React.lazy(() => import("../Pages/Profile"));
 const UploadMeme = React.lazy(() => import("../Pages/UploadMeme"));
 const Loader = React.lazy(() => import("../Components/Loader"));
+const PageNotFound = React.lazy(() => import("../Pages/PageNotFound"));
 
 const RouteFile = () => {
   const router = createBrowserRouter([
@@ -62,10 +63,10 @@ const RouteFile = () => {
         },
       ],
     },
-    // {
-    //   path: "/*",
-    //   element: <PageNotFound />,
-    // },
+    {
+      path: "/*",
+      element: <PageNotFound />,
+    },
   ]);
   return (
     <>
