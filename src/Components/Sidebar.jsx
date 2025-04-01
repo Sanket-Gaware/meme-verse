@@ -4,7 +4,6 @@ import {
   HeartIcon,
   HomeIcon,
   LogOut,
-  MoonIcon,
   SearchIcon,
   UploadCloudIcon,
 } from "lucide-react";
@@ -51,7 +50,6 @@ function Sidebar() {
             onClick={() => {
               toast.dismiss(t.id);
               localStorage.removeItem("Token");
-              localStorage.removeItem("username");
               navigate("/");
             }}
             className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-bold text-red-600 hover:text-indigo-500 focus:outline-none focus:ring-0 focus:ring-indigo-500"
@@ -73,33 +71,33 @@ function Sidebar() {
           </p>
           <div className="px-10 mt-10">
             <NavLink
-              to="/main/home"
+              to="home"
               className="flex gap-3 text-lg mb-10 cursor-pointer hover:text-blue-800"
             >
               <HomeIcon /> Home
             </NavLink>
             <NavLink
-              to="/main/search"
+              to="search"
               className="flex gap-3 text-lg mb-10 cursor-pointer  hover:text-blue-800"
               // onClick={() => navigate("/main/search")}
             >
               <SearchIcon /> Search
             </NavLink>
             <NavLink
-              to="/main/explore"
+              to="explore"
               className="flex gap-3 text-lg mb-10 cursor-pointer  hover:text-blue-800"
               // onClick={() => navigate("/main/explore")}
             >
               <CompassIcon /> Explore
             </NavLink>
             <NavLink
-              to="/main/upload"
+              to="upload"
               className="flex gap-3 text-lg mb-10  hover:text-blue-800"
             >
               <UploadCloudIcon /> Upload
             </NavLink>
             <NavLink
-              to="/main/leaderboard"
+              to="leaderboard"
               className="flex gap-3 text-lg mb-10 cursor-pointer  hover:text-blue-800"
               // onClick={() => navigate("/main/leaderboard")}
             >
@@ -109,7 +107,7 @@ function Sidebar() {
               <MoonIcon /> Dark Mode
             </div> */}
             <NavLink
-              to="/main/profile"
+              to="profile"
               className="flex gap-3 text-lg mb-10  hover:text-blue-800"
             >
               <img
@@ -134,27 +132,21 @@ function Sidebar() {
 
       {/* Bottom Navbar */}
       <div className="fixed bottom-0 w-full bg-white border-t border-gray-300 flex justify-around items-center md:hidden p-2 z-50 py-2">
-        <HomeIcon className="w-6 h-6" onClick={() => navigate("/main/home")} />
-        <SearchIcon
-          className="w-6 h-6"
-          onClick={() => navigate("/main/search")}
-        />
-        <CompassIcon
-          className="w-6 h-6"
-          onClick={() => navigate("/main/explore")}
-        />
+        <HomeIcon className="w-6 h-6" onClick={() => navigate("home")} />
+        <SearchIcon className="w-6 h-6" onClick={() => navigate("search")} />
+        <CompassIcon className="w-6 h-6" onClick={() => navigate("explore")} />
         <HeartIcon
           className="w-6 h-6"
-          onClick={() => navigate("/main/leaderboard")}
+          onClick={() => navigate("leaderboard")}
         />
 
         <UploadCloudIcon
           className="w-6 h-6"
-          onClick={() => navigate("/main/upload")}
+          onClick={() => navigate("upload")}
         />
         <img
           className="h-7 w-7 rounded-full"
-          onClick={() => navigate("/main/profile")}
+          onClick={() => navigate("profile")}
           src={
             currentUser != ""
               ? currentUser[0]?.profile

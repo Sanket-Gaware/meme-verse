@@ -19,7 +19,9 @@ const UploadMeme = () => {
 
   const handleUpload = async () => {
     if (!title || !image || !caption) {
-      toast.error("Please enter a title and select an image!");
+      toast.error("Please enter a title and select an image!", {
+        autoClose: 2000,
+      });
       return;
     }
 
@@ -28,16 +30,12 @@ const UploadMeme = () => {
     formData.append("image", image);
 
     try {
-      //   const res = await axios.post(
-      //     `https://api.imgbb.com/1/upload?key=${imgbbAPIKey}`,
-      //     formData
-      //   );
       const res = await dispatch(postMeme(formData)).unwrap(); //by using unwrap we can handle errors properly
 
       const imageUrl = res.data.data.url;
 
       console.log("Uploaded meme:", { title, imageUrl });
-      toast.success("Meme uploaded successfully! 🎉");
+      toast.success("Meme uploaded successfully! 🎉", { autoClose: 1000 });
 
       const newMeme = {
         id: Date.now(),

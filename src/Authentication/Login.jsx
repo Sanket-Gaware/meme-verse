@@ -27,7 +27,7 @@ const Login = () => {
 
   useEffect(() => {
     if (localStorage.getItem("Token")) {
-      navigate("/main/home");
+      navigate(`${localStorage.getItem("LastVisitedPath")}`);
     }
   }, []);
 
@@ -40,19 +40,21 @@ const Login = () => {
     try {
       const response = await dispatch(login(credentials)).unwrap();
       if (response.status === 200) {
-        toast.success("Login successful!");
+        toast.success("Login successful!", { autoClose: 1000 });
         localStorage.setItem("Token", response.data.token);
-        localStorage.setItem("username", values.email);
-        navigate("/main/home");
+        values.email === localStorage.getItem("username")
+          ? navigate(`${localStorage.getItem("LastVisitedPath")}`)
+          : navigate("home")(localStorage.setItem("username", values.email));
       }
     } catch (error) {
       if (error.response) {
         setErrorMessage(error.response.data.message || "Login failed!");
-        toast.error(error.response.data.message);
-      } else {
-        setErrorMessage("Login failed!");
-        toast.error("Login failed!");
+        toast.error(error.response.data.message, { autoClose: 3000 });
       }
+      //  else {
+      //   setErrorMessage("Login failed!--------");
+      //   toast.error("Login failed!----------");
+      // }
     }
   };
 
