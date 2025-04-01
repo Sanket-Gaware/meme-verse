@@ -51,6 +51,7 @@ function Sidebar() {
             onClick={() => {
               toast.dismiss(t.id);
               localStorage.removeItem("Token");
+              localStorage.removeItem("username");
               navigate("/");
             }}
             className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-bold text-red-600 hover:text-indigo-500 focus:outline-none focus:ring-0 focus:ring-indigo-500"
