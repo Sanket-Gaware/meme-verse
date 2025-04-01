@@ -90,7 +90,7 @@ const UploadMeme = () => {
           type="text"
           className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-0"
           placeholder="Enter meme caption"
-          value={title}
+          value={caption}
           onChange={(e) => setCaption(e.target.value)}
         />
       </div>
