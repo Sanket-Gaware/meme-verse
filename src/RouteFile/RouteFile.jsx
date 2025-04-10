@@ -8,6 +8,7 @@ const DontHaveAccount = React.lazy(() =>
 const ForgotPassword = React.lazy(() =>
   import("../Authentication/ForgotPassword")
 );
+const AuthRoutes = React.lazy(() => import("./AuthGuard"));
 const MainWrapper = React.lazy(() => import("../Pages/MainWrapper"));
 const Home = React.lazy(() => import("../Pages/Home"));
 const Explore = React.lazy(() => import("../Pages/Explore"));
@@ -34,7 +35,11 @@ const RouteFile = () => {
     },
     {
       path: "/",
-      element: <MainWrapper />,
+      element: (
+        <AuthRoutes>
+          <MainWrapper />
+        </AuthRoutes>
+      ),
       children: [
         {
           index: true,

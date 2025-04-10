@@ -88,7 +88,7 @@ const PostedMemeCard = ({ memes, likedMemes, comments }) => {
 
               <div className="flex space-x-4 pt-2 text-gray-600">
                 <button
-                  className={`hover:text-red-500 transition flex gap-1 ${
+                  className={`hover:text-red-500 transition flex gap-1 cursor-pointer ${
                     isLiked ? "text-red-500" : ""
                   }`}
                   onClick={() => handleLike(meme.id)}
@@ -99,7 +99,7 @@ const PostedMemeCard = ({ memes, likedMemes, comments }) => {
                 {/* counting comments */}
                 <div className="relative inline-flex">
                   <button
-                    className="hover:text-blue-500 transition"
+                    className="hover:text-blue-500 transition cursor-pointer"
                     onClick={() => toggleCommentBox(meme.id)}
                   >
                     <MessageCircle />
@@ -114,7 +114,7 @@ const PostedMemeCard = ({ memes, likedMemes, comments }) => {
                     {formatNumber(comments[meme.id]?.length)}
                   </span>
                 </div>
-                <button className="hover:text-green-500 transition">
+                <button className="hover:text-green-500 transition cursor-pointer">
                   <Share2Icon />
                 </button>
               </div>
@@ -132,7 +132,7 @@ const PostedMemeCard = ({ memes, likedMemes, comments }) => {
                       }
                     />
                     <button
-                      className="ml-2 bg-blue-500 text-white rounded-lg px-2 py-1"
+                      className="ml-2 bg-blue-500 text-white rounded-lg px-2 py-1 cursor-pointer"
                       onClick={() => handleCommentSubmit(meme.id)}
                     >
                       <Navigation />
