@@ -162,7 +162,7 @@ const ForgotPassword = () => {
             <button
               type="button"
               onClick={togglePasswordVisibility}
-              className="absolute right-2 top-2 text-gray-600"
+              className="absolute right-2 top-2 mt-1 text-gray-600"
             >
               {showPassword ? (
                 <EyeOffIcon className="w-5 h-5" />
