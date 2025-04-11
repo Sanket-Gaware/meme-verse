@@ -52,10 +52,6 @@ const Login = () => {
         setErrorMessage(error.response.data.message || "Login failed!");
         toast.error(error.response.data.message, { autoClose: 3000 });
       }
-      //  else {
-      //   setErrorMessage("Login failed!--------");
-      //   toast.error("Login failed!----------");
-      // }
     }
   };
 

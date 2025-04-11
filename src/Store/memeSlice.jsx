@@ -1,6 +1,49 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+export const sendOtp = createAsyncThunk(
+  "auth/sendOtp",
+  async (email, { rejectWithValue }) => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    if (email === "") {
+      return rejectWithValue("Email is required");
+    }
+
+    try {
+      const response = await axios.post(`${BASE_URL}api/auth/send-otp`, {
+        username: email,
+      });
+      return response;
+    } catch (error) {
+      const errMsg = error.response?.data?.msg || "Something went wrong!";
+      return rejectWithValue(errMsg);
+    }
+  }
+);
+
+// setNewPassword Thunk
+export const setNewPassword = createAsyncThunk(
+  "auth/setNewPassword",
+  async ({ email, otp, password }, { rejectWithValue }) => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    if (otp === "" || password === "") {
+      return rejectWithValue("OTP & Password required");
+    }
+
+    try {
+      const response = await axios.post(`${BASE_URL}api/auth/reset-password`, {
+        email: email,
+        otp: otp,
+        newPassword: password,
+      });
+      return response;
+    } catch (error) {
+      const errMsg = error.response?.data?.msg || "Something went wrong!";
+      console.log(error);
+      return rejectWithValue(errMsg);
+    }
+  }
+);
 // Async thunk to fetch memes
 export const postMeme = createAsyncThunk(
   "memes/postMeme",
