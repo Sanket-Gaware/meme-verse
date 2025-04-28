@@ -53,36 +53,36 @@ const PostedMemeCard = ({ memes, likedMemes, comments }) => {
         // console.log("Coments=>" + memeComments);
         return (
           <div
-            key={meme.id}
+            key={meme?.id}
             className="max-w-md mx-auto bg-white rounded-2xl shadow-lg border border-gray-200 my-5"
           >
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center space-x-3">
                 <img
-                  src={meme.url}
+                  src={meme?.url}
                   alt="Meme thumbnail"
                   className="w-10 h-10 rounded-full object-cover border border-gray-300"
                 />
                 <div>
-                  <h2 className="font-semibold text-gray-900">{meme.name}</h2>
-                  <p className="text-sm text-gray-500">Meme ID: {meme.id}</p>
+                  <h2 className="font-semibold text-gray-900">{meme?.name}</h2>
+                  <p className="text-sm text-gray-500">Meme ID: {meme?.id}</p>
                 </div>
               </div>
             </div>
 
             <img
-              src={meme.url}
-              alt={meme.name}
+              src={meme?.url}
+              alt={meme?.name}
               className="w-full h-90 object-cover"
             />
 
             <div className="p-4 space-y-2">
               <div className="flex justify-between text-sm text-gray-600">
                 <span>
-                  🗨️ Captions: <strong>{meme.captions}</strong>
+                  🗨️ Captions: <strong>{meme?.captions}</strong>
                 </span>
                 <span>
-                  📦 Boxes: <strong>{meme.box_count}</strong>
+                  📦 Boxes: <strong>{meme?.box_count}</strong>
                 </span>
               </div>
 
@@ -106,12 +106,12 @@ const PostedMemeCard = ({ memes, likedMemes, comments }) => {
                   </button>
                   <span
                     className={`${
-                      comments[meme.id]?.length > 0
+                      comments[meme?.id]?.length > 0
                         ? "absolute top-0.9 right-0.5 grid max-h-[25px] min-w-[23px] translate-x-2/4 -translate-y-2/4 place-items-center rounded-full bg-sky-600 py-1 px-1 text-xs text-white border border-white"
                         : "hidden"
                     }`}
                   >
-                    {formatNumber(comments[meme.id]?.length)}
+                    {formatNumber(comments[meme?.id]?.length)}
                   </span>
                 </div>
                 <button className="hover:text-green-500 transition cursor-pointer">

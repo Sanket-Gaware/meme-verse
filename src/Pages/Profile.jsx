@@ -3,6 +3,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import PostedMemeCard from "../Components/PostedMemeCard";
 
 const Profile = () => {
   const username = localStorage.getItem("username");
@@ -119,14 +120,15 @@ const Profile = () => {
       <hr className="my-6 border-gray-300" />
 
       <div className="grid grid-cols-3 gap-2 md:pb-0 pb-12">
-        {user.memes.map((meme, idx) => (
+        {/* {user.memes.map((meme, idx) => (
           <img
             key={idx}
             src={meme}
             alt={`Meme ${idx}`}
             className="aspect-square object-cover"
           />
-        ))}
+        ))} */}
+        <PostedMemeCard memes={user.memes} />
       </div>
     </div>
   );
