@@ -22,6 +22,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -38,6 +39,7 @@ const Login = () => {
       username: values.email,
       password: values.password,
     };
+    setLoading(true);
     try {
       const response = await dispatch(login(credentials)).unwrap();
       if (response.status === 200) {
@@ -189,10 +191,11 @@ const Login = () => {
 
           {/* Submit Button */}
           <button
+            disabled={loading}
             type="submit"
             className="w-full bg-[#e1307a] text-white font-semibold py-2 rounded-md hover:bg-purple-800 transition"
           >
-            Login
+            {loading ? "Login..." : "Login"}
           </button>
 
           <div className="border-t border-gray-200 my-4"></div>

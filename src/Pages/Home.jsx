@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import PostedMemeCard from "../Components/PostedMemeCard";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMemes, fetchUsers, getUserMemes } from "../Store/memeSlice";
+import TopBar from "../Components/TopBar";
 const Loader = React.lazy(() => import("../Components/Loader"));
 function Home() {
   const username = localStorage.getItem("username");
@@ -29,10 +30,9 @@ function Home() {
   useEffect(() => {
     dispatch(fetchMemes());
     dispatch(fetchUsers());
-  }, []);
-  useEffect(() => {
     handleUserMemes();
   }, []);
+
   if (loading) return <Loader />;
   if (error)
     return (
@@ -45,6 +45,7 @@ function Home() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 w-full">
+      <TopBar currentUser={currentUser} users={users} username={username} />
       <div className="col-span-8 text-center overflow-y-scroll">
         <PostedMemeCard
           memes={newMemes}

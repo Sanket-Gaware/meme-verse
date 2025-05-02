@@ -6,7 +6,13 @@ body {
   overflow-x: hidden;
   font-family: "Inter", sans-serif;
 }
-.active  {
+.active {
   @apply text-black font-bold;
-
+}
+.no-scrollbar::-webkit-scrollbar {
+  /* display: none; */
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

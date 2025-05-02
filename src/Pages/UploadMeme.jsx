@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { postMeme, postMeme2 } from "../Store/memeSlice";
+import { getUserMemes, postMeme, postMeme2 } from "../Store/memeSlice";
 
 const UploadMeme = () => {
   const [title, setTitle] = useState("");
@@ -10,6 +10,15 @@ const UploadMeme = () => {
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const username = localStorage.getItem("username");
+
+  const handleUserMemes = async () => {
+    try {
+      await dispatch(getUserMemes(username)).unwrap();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -35,7 +44,6 @@ const UploadMeme = () => {
       const imageUrl = res.data.data.url;
 
       // console.log("Uploaded meme:", { title, imageUrl, caption });
-      toast.success("Meme uploaded successfully! 🎉", { autoClose: 1000 });
 
       const newMeme = {
         title,
@@ -49,11 +57,12 @@ const UploadMeme = () => {
 
       res1.status !== 201
         ? toast.error("Failed to upload meme to Database")
-        : "";
+        : toast.success("Meme uploaded successfully! 🎉", { autoClose: 1000 });
       // Reset
       setTitle("");
       setImage(null);
       setPreview(null);
+      handleUserMemes();
     } catch (error) {
       console.error(error);
       toast.error("Failed to upload meme.");
@@ -102,7 +111,7 @@ const UploadMeme = () => {
           <img
             src={preview}
             alt="Preview"
-            className="w-full h-64 object-cover rounded-md border"
+            className="flex mx-auto w-auto h-70 object-cover rounded-md border border-gray-300"
           />
         </div>
       )}

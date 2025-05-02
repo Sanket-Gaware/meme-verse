@@ -85,7 +85,7 @@ const PostedMemeCard = ({ memes, likedMemes, comments }) => {
             <img
               src={meme?.url}
               alt={meme?.name}
-              className="w-full h-90 object-cover"
+              className="w-auto flex mx-auto h-90 object-cover"
             />
 
             <div className="p-4 space-y-2">

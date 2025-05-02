@@ -65,6 +65,33 @@ export const getUserMemes = createAsyncThunk(
   }
 );
 
+// Async thunk to delete a meme by user
+export const deleteUserMeme = createAsyncThunk(
+  "memes/deleteUserMeme",
+  async ({ memeId, userId }, { rejectWithValue }) => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    const DELETE_MEME_URL = import.meta.env.VITE_DELETE_USER_MEME;
+console.log(memeId)
+    try {
+      const response = await axios.delete(
+        `${BASE_URL}${DELETE_MEME_URL}/${memeId}`,
+        {
+          data: {
+            userId,
+          },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("Token")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
 // Async thunk to post memes to database
 export const postMeme2 = createAsyncThunk(
   "memes/postMeme2",
