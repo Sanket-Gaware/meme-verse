@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import PostedMemeCard from "../Components/PostedMemeCard";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchMemes, fetchUsers } from "../Store/memeSlice";
+import { fetchMemes, fetchUsers, getUserMemes } from "../Store/memeSlice";
 const Loader = React.lazy(() => import("../Components/Loader"));
 function Home() {
   const username = localStorage.getItem("username");
@@ -9,11 +9,30 @@ function Home() {
   const { memes, users, loading, error, likedMemes, comments } = useSelector(
     (state) => state.meme
   );
+  const [newMemes, setNewMemes] = useState(memes);
+
+  const handleUserMemes = async () => {
+    try {
+      const response = await dispatch(getUserMemes(username)).unwrap();
+      const userMemes = response.data.map((meme) => ({
+        box_count: 0,
+        captions: meme.caption,
+        id: meme._id,
+        name: meme.title,
+        url: meme.image,
+      }));
+      setNewMemes(memes.concat(userMemes));
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
     dispatch(fetchMemes());
     dispatch(fetchUsers());
   }, []);
-
+  useEffect(() => {
+    handleUserMemes();
+  }, []);
   if (loading) return <Loader />;
   if (error)
     return (
@@ -23,11 +42,12 @@ function Home() {
     );
 
   const currentUser = users.filter((user) => user.username == username);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 w-full">
       <div className="col-span-8 text-center overflow-y-scroll">
         <PostedMemeCard
-          memes={memes}
+          memes={newMemes}
           likedMemes={likedMemes}
           comments={comments}
         />

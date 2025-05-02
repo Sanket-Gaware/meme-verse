@@ -44,7 +44,56 @@ export const setNewPassword = createAsyncThunk(
     }
   }
 );
-// Async thunk to fetch memes
+
+//get user memes
+export const getUserMemes = createAsyncThunk(
+  "memes/getUserMemes",
+  async (username, { rejectWithValue }) => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    const GET_MEME = import.meta.env.VITE_GET_USER_MEMES;
+    try {
+      const response = await axios.get(`${BASE_URL}${GET_MEME}/${username}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("Token")}`,
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+// Async thunk to post memes to database
+export const postMeme2 = createAsyncThunk(
+  "memes/postMeme2",
+  async ({ title, image, caption, uploadedBy }, { rejectWithValue }) => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    const POST_MEME_URL2 = import.meta.env.VITE_POST_MEME_URL2;
+    try {
+      const response = await axios.post(
+        `${BASE_URL}${POST_MEME_URL2}`,
+        {
+          title,
+          image,
+          caption,
+          uploadedBy,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("Token")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+// Async thunk to post memes to imgbb
 export const postMeme = createAsyncThunk(
   "memes/postMeme",
   async (formData, { rejectWithValue }) => {
@@ -110,6 +159,7 @@ const memeSlice = createSlice({
   initialState: {
     memes: [],
     users: [],
+    userMemes: [],
     likedMemes: ["119215120", "322841258", "188390779", "247375501"],
     comments: {
       [221578498]: ["awsome", "Nice one"],
@@ -139,9 +189,9 @@ const memeSlice = createSlice({
     setMemes: (state, action) => {
       state.memes = action.payload;
     },
-    addMeme: (state, action) => {
-      state.memes = [action.payload, ...state.memes];
-    },
+    // addMeme: (state, action) => {
+    //   state.memes = [action.payload, ...state.memes];
+    // },
   },
   extraReducers: (builder) => {
     builder
@@ -168,8 +218,20 @@ const memeSlice = createSlice({
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(getUserMemes.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getUserMemes.fulfilled, (state, action) => {
+        state.loading = false;
+        state.userMemes = action.payload;
+      })
+      .addCase(getUserMemes.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
-export const { likeMeme, addComment, setMemes, addMeme } = memeSlice.actions;
+export const { likeMeme, addComment, setMemes } = memeSlice.actions;
 export default memeSlice.reducer;

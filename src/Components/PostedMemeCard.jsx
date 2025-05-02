@@ -1,13 +1,25 @@
 import { Heart, MessageCircle, Navigation, Share2Icon } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { likeMeme, addComment } from "../Store/memeSlice";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const PostedMemeCard = ({ memes, likedMemes, comments }) => {
   const dispatch = useDispatch();
 
   const [commentInput, setCommentInput] = useState({});
   const [openCommentBox, setOpenCommentBox] = useState({});
+
+  const [shuffledMemes, setShuffledMemes] = useState([]);
+
+  useEffect(() => {
+    // Shuffle logic using Fisher-Yates
+    const shuffled = [...memes];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    setShuffledMemes(shuffled);
+  }, [memes]);
 
   //meme likes
   const handleLike = (id) => {
@@ -47,7 +59,7 @@ const PostedMemeCard = ({ memes, likedMemes, comments }) => {
 
   return (
     <div>
-      {memes.map((meme) => {
+      {shuffledMemes.map((meme) => {
         const isLiked = likedMemes.includes(meme.id);
         const memeComments = comments[meme.id] || [];
         // console.log("Coments=>" + memeComments);
@@ -81,9 +93,14 @@ const PostedMemeCard = ({ memes, likedMemes, comments }) => {
                 <span>
                   🗨️ Captions: <strong>{meme?.captions}</strong>
                 </span>
-                <span>
-                  📦 Boxes: <strong>{meme?.box_count}</strong>
-                </span>
+
+                {meme?.box_count < 1 ? (
+                  ""
+                ) : (
+                  <span>
+                    📦 Boxes: <strong>{meme?.box_count}</strong>
+                  </span>
+                )}
               </div>
 
               <div className="flex space-x-4 pt-2 text-gray-600">

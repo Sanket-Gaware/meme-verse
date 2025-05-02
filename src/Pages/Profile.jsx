@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import PostedMemeCard from "../Components/PostedMemeCard";
 
 const Profile = () => {
   const username = localStorage.getItem("username");
@@ -10,45 +11,14 @@ const Profile = () => {
   const currentUser = users.filter((user) => user.username == username);
   const navigate = useNavigate();
   const [selectedMeme, setSelectedMeme] = useState(null);
-
+  const { userMemes } = useSelector((state) => state.meme);
+  console.log(userMemes.data);
   const user = {
     username: "meme_master",
     bio: "Making the internet laugh one meme at a time 😂",
     posts: 34,
     followers: 1200,
     following: 180,
-    memes: [
-      {
-        id: "1",
-        name: "Drake Hotline Bling",
-        url: "https://i.imgflip.com/1bij.jpg",
-      },
-      {
-        id: "2",
-        name: "Distracted Boyfriend",
-        url: "https://i.imgflip.com/30b1gx.jpg",
-      },
-      {
-        id: "3",
-        name: "One Does Not Simply",
-        url: "https://i.imgflip.com/3si4.jpg",
-      },
-      {
-        id: "4",
-        name: "Grumpy Cat",
-        url: "https://i.imgflip.com/26am.jpg",
-      },
-      {
-        id: "5",
-        name: "UNO Draw 25",
-        url: "https://i.imgflip.com/1otk96.jpg",
-      },
-      {
-        id: "6",
-        name: "Surprised Pikachu",
-        url: "https://i.imgflip.com/2wifvo.jpg",
-      },
-    ],
   };
 
   const showLogoutToast = () => {
@@ -143,7 +113,7 @@ const Profile = () => {
       <hr className="my-6 border-gray-300" />
 
       <div className="grid grid-cols-3 gap-2 md:pb-0 pb-12">
-        {user.memes.map((meme, idx) => (
+        {userMemes.data.map((meme, idx) => (
           <img
             key={idx}
             src={meme.url}
@@ -153,56 +123,7 @@ const Profile = () => {
           />
         ))}
       </div>
-      {selectedMeme && (
-        <div
-          className="fixed inset-0 bg-[rgba(0,0,0,0.6)] flex items-center justify-center z-50 overflow-y-auto"
-          onClick={() => setSelectedMeme(null)}
-        >
-          <div
-            className="bg-white rounded-2xl w-11/12 md:w-2/3 lg:w-1/2 shadow-lg border border-gray-200"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between p-4">
-              <div className="flex items-center space-x-3">
-                <img
-                  src={selectedMeme.url}
-                  alt="Meme thumbnail"
-                  className="w-10 h-10 rounded-full object-cover border border-gray-300"
-                />
-                <h2 className="font-semibold text-gray-900">
-                  {selectedMeme.name}
-                </h2>
-              </div>
-            </div>
-
-            <img
-              src={selectedMeme.url}
-              alt={selectedMeme.name}
-              className="w-full h-auto object-cover rounded-b-2xl"
-            />
-
-            <div className="p-4 space-y-2">
-              <div className="flex space-x-4 pt-2 text-gray-600">
-                <button
-                  className={`hover:text-red-500 transition flex gap-1 cursor-pointer ${"text-red-500"}`}
-                >
-                  <Heart fill="red" />
-                </button>
-
-                <div className="relative inline-flex">
-                  <button className="hover:text-blue-500 transition cursor-pointer">
-                    <MessageCircle />
-                  </button>
-                </div>
-
-                <button className="hover:text-green-500 transition cursor-pointer">
-                  <Share2Icon />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {selectedMeme && <PostedMemeCard memes={userMemes} />}
     </div>
   );
 };

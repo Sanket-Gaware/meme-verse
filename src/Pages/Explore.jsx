@@ -1,15 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import PostedMemeCard from "../Components/PostedMemeCard";
 
 export default function Explore() {
   const { memes, loading, error } = useSelector((state) => state.meme);
   const [selectedMeme, setSelectedMeme] = useState(null);
+  const [exploreMemes, setExploreMemes] = useState([]);
 
+  useEffect(() => {
+    // Shuffle logic using Fisher-Yates
+    const shuffled = [...memes];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    setExploreMemes(shuffled);
+  }, [memes]);
   if (loading) return <p>Loading memes...</p>;
   if (error) return <p>Error: {error}</p>;
-
-  const exploreMemes = [...memes].reverse();
 
   return (
     <div className="md:p-5 p-1">

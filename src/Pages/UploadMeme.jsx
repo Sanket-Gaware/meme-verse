@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { addMeme, postMeme } from "../Store/memeSlice";
+import { postMeme, postMeme2 } from "../Store/memeSlice";
 
 const UploadMeme = () => {
   const [title, setTitle] = useState("");
@@ -34,18 +34,22 @@ const UploadMeme = () => {
 
       const imageUrl = res.data.data.url;
 
-      console.log("Uploaded meme:", { title, imageUrl });
+      // console.log("Uploaded meme:", { title, imageUrl, caption });
       toast.success("Meme uploaded successfully! 🎉", { autoClose: 1000 });
 
       const newMeme = {
-        id: Date.now(),
         title,
-        imageUrl,
-        createdAt: new Date().toISOString(),
+        image: imageUrl,
+        caption,
         uploadedBy: localStorage.getItem("username"),
       };
+      // console.log(newMeme);
+      const res1 = await dispatch(postMeme2(newMeme)).unwrap();
+      // console.log(res1);
 
-      dispatch(addMeme(newMeme));
+      res1.status !== 201
+        ? toast.error("Failed to upload meme to Database")
+        : "";
       // Reset
       setTitle("");
       setImage(null);
