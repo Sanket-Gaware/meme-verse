@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PostedMemeCard from "../Components/PostedMemeCard";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchMemes, fetchUsers, getUserMemes } from "../Store/memeSlice";
+import { fetchMemes, fetchUsers, getAllMemes } from "../Store/memeSlice";
 import TopBar from "../Components/TopBar";
 import Conversation from "./Messages/Conversation";
 import { AllUsers } from "../Components/AllUsers";
@@ -18,13 +18,14 @@ function Home() {
 
   const handleUserMemes = async () => {
     try {
-      const response = await dispatch(getUserMemes(username)).unwrap();
+      const response = await dispatch(getAllMemes()).unwrap();
       const userMemes = response.data.map((meme) => ({
         box_count: 0,
         captions: meme.caption,
         id: meme._id,
         name: meme.title,
         url: meme.image,
+        uploadedBy: meme.uploadedBy,
       }));
       setNewMemes(memes.concat(userMemes));
     } catch (error) {
@@ -68,6 +69,7 @@ function Home() {
             memes={newMemes}
             likedMemes={likedMemes}
             comments={comments}
+            users={users}
           />
         ) : (
           <Conversation suid={userToChat} setUsertoChat={setUsertoChat} />

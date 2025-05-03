@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { likeMeme, addComment } from "../Store/memeSlice";
 import { useState, useEffect } from "react";
 
-const PostedMemeCard = ({ memes, likedMemes, comments }) => {
+const PostedMemeCard = ({ memes, likedMemes, comments, users }) => {
   const dispatch = useDispatch();
 
   const [commentInput, setCommentInput] = useState({});
@@ -71,13 +71,26 @@ const PostedMemeCard = ({ memes, likedMemes, comments }) => {
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center space-x-3">
                 <img
-                  src={meme?.url}
+                  // src={meme?.url}
+                  src={
+                    meme.uploadedBy
+                      ? users.find((user) => user.username === meme.uploadedBy)
+                          ?.profile
+                      : meme.url
+                  }
                   alt="Meme thumbnail"
                   className="w-10 h-10 rounded-full object-cover border border-gray-300"
                 />
                 <div>
-                  <h2 className="font-semibold text-gray-900">{meme?.name}</h2>
-                  <p className="text-sm text-gray-500">Meme ID: {meme?.id}</p>
+                  <h2 className="font-semibold text-gray-900">
+                    {meme.uploadedBy
+                      ? users.find((user) => user.username === meme.uploadedBy)
+                          ?.fullname
+                      : meme.name}
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    {meme.uploadedBy ? meme.name : `Meme ID: ${meme?.id}`}
+                  </p>
                 </div>
               </div>
             </div>

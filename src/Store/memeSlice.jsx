@@ -45,6 +45,26 @@ export const setNewPassword = createAsyncThunk(
   }
 );
 
+//get all memes
+export const getAllMemes = createAsyncThunk(
+  "memes/getMemes",
+  async (_, { rejectWithValue }) => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    const GET_MEME = import.meta.env.VITE_GET_ALL_MEMES;
+    try {
+      const response = await axios.get(`${BASE_URL}${GET_MEME}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("Token")}`,
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
 //get user memes
 export const getUserMemes = createAsyncThunk(
   "memes/getUserMemes",
@@ -71,7 +91,7 @@ export const deleteUserMeme = createAsyncThunk(
   async ({ memeId, userId }, { rejectWithValue }) => {
     const BASE_URL = import.meta.env.VITE_BASE_URL;
     const DELETE_MEME_URL = import.meta.env.VITE_DELETE_USER_MEME;
-console.log(memeId)
+    console.log(memeId);
     try {
       const response = await axios.delete(
         `${BASE_URL}${DELETE_MEME_URL}/${memeId}`,
@@ -246,15 +266,15 @@ const memeSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(getUserMemes.pending, (state) => {
+      .addCase(getAllMemes.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(getUserMemes.fulfilled, (state, action) => {
+      .addCase(getAllMemes.fulfilled, (state, action) => {
         state.loading = false;
         state.userMemes = action.payload;
       })
-      .addCase(getUserMemes.rejected, (state, action) => {
+      .addCase(getAllMemes.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

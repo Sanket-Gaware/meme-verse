@@ -6,7 +6,7 @@ import {
   Share2Icon,
   Trash2,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -18,15 +18,42 @@ const Profile = () => {
   const currentUser = users.filter((user) => user.username == username);
   const navigate = useNavigate();
   const [selectedMeme, setSelectedMeme] = useState(null);
-  const { userMemes } = useSelector((state) => state.meme);
+  // const { userMemes } = useSelector((state) => state.meme);
   const dispatch = useDispatch();
-  const newUserMemes = userMemes.data.map((meme) => ({
-    box_count: meme.box_count,
-    captions: meme.caption,
-    id: meme._id,
-    name: meme.title,
-    url: meme.image,
-  }));
+  const [newUserMemes, setNewUserMemes] = useState([]);
+
+  useEffect(() => {
+    console.log("useEffect");
+    handleGetUserMemes();
+  }, []);
+
+  const handleGetUserMemes = async () => {
+    try {
+      const response = await dispatch(getUserMemes(username)).unwrap();
+      console.log(response);
+      setNewUserMemes(
+        response.data.map((meme) => ({
+          box_count: meme.box_count,
+          captions: meme.caption,
+          id: meme._id,
+          name: meme.title,
+          url: meme.image,
+          uploadedBy: meme.uploadedBy,
+        }))
+      );
+    } catch (error) {
+      console.error("Failed to fetch memes:", error);
+    }
+  };
+
+  // const newUserMemes = userMemes.data.map((meme) => ({
+  //   box_count: meme.box_count,
+  //   captions: meme.caption,
+  //   id: meme._id,
+  //   name: meme.title,
+  //   url: meme.image,
+  //   uploadedBy: meme.uploadedBy,
+  // }));
 
   const user = {
     username: "meme_master",
