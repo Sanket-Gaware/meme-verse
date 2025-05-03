@@ -72,57 +72,59 @@ const UploadMeme = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg pb-2 border border-gray-100">
-      <h2 className="text-2xl font-bold mb-6 text-center">Upload Meme</h2>
+    <div className="p-2">
+      <div className="max-w-xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg pb-2 border border-gray-100">
+        <h2 className="text-2xl font-bold mb-6 text-center">Upload Meme</h2>
 
-      <div className="mb-4">
-        <label className="block font-semibold mb-1">Meme Title</label>
-        <input
-          type="text"
-          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-0"
-          placeholder="Enter meme title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-      </div>
-
-      <div className="mb-4">
-        <label className="block font-semibold mb-1">Select Meme Image</label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          className="w-full border-2 border-gray-200 rounded-lg p-2 hover:border-sky-400 cursor-pointer"
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block font-semibold mb-1">Meme Caption</label>
-        <input
-          type="text"
-          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-0"
-          placeholder="Enter meme caption"
-          value={caption}
-          onChange={(e) => setCaption(e.target.value)}
-        />
-      </div>
-
-      {preview && (
         <div className="mb-4">
-          <img
-            src={preview}
-            alt="Preview"
-            className="flex mx-auto w-auto h-70 object-cover rounded-md border border-gray-300"
+          <label className="block font-semibold mb-1">Meme Title</label>
+          <input
+            type="text"
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-0"
+            placeholder="Enter meme title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
           />
         </div>
-      )}
 
-      <button
-        onClick={handleUpload}
-        disabled={loading}
-        className="w-full bg-sky-500 text-white py-2 rounded-md font-semibold hover:bg-sky-600 transition"
-      >
-        {loading ? "Uploading..." : "Upload Meme"}
-      </button>
+        <div className="mb-4">
+          <label className="block font-semibold mb-1">Select Meme Image</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full border-2 border-gray-200 rounded-lg p-2 hover:border-sky-400 cursor-pointer"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block font-semibold mb-1">Meme Caption</label>
+          <input
+            type="text"
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-0"
+            placeholder="Enter meme caption"
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+          />
+        </div>
+
+        {preview && (
+          <div className="mb-4">
+            <img
+              src={preview}
+              alt="Preview"
+              className="flex mx-auto w-auto h-70 object-cover rounded-md border border-gray-300"
+            />
+          </div>
+        )}
+
+        <button
+          onClick={handleUpload}
+          disabled={loading}
+          className="w-full bg-sky-500 text-white py-2 rounded-md font-semibold hover:bg-sky-600 transition"
+        >
+          {loading ? "Uploading..." : "Upload Meme"}
+        </button>
+      </div>
     </div>
   );
 };

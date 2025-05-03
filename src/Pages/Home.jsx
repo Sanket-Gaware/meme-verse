@@ -3,7 +3,10 @@ import PostedMemeCard from "../Components/PostedMemeCard";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMemes, fetchUsers, getUserMemes } from "../Store/memeSlice";
 import TopBar from "../Components/TopBar";
+import Conversation from "./Messages/Conversation";
+import { AllUsers } from "../Components/AllUsers";
 const Loader = React.lazy(() => import("../Components/Loader"));
+
 function Home() {
   const username = localStorage.getItem("username");
   const dispatch = useDispatch();
@@ -11,6 +14,7 @@ function Home() {
     (state) => state.meme
   );
   const [newMemes, setNewMemes] = useState(memes);
+  const [userToChat, setUsertoChat] = useState(null);
 
   const handleUserMemes = async () => {
     try {
@@ -31,6 +35,7 @@ function Home() {
     dispatch(fetchMemes());
     dispatch(fetchUsers());
     handleUserMemes();
+    userToChat;
   }, []);
 
   if (loading) return <Loader />;
@@ -45,58 +50,36 @@ function Home() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 w-full">
-      <TopBar currentUser={currentUser} users={users} username={username} />
-      <div className="col-span-8 text-center overflow-y-scroll">
-        <PostedMemeCard
-          memes={newMemes}
-          likedMemes={likedMemes}
-          comments={comments}
-        />
+      <TopBar
+        currentUser={currentUser}
+        users={users}
+        username={username}
+        setUsertoChat={setUsertoChat}
+      />
+      <div
+        className={
+          userToChat
+            ? "col-span-8 text-center overflow-y-hidden px-0"
+            : "col-span-8 text-center overflow-y-scroll px-3"
+        }
+      >
+        {userToChat == null ? (
+          <PostedMemeCard
+            memes={newMemes}
+            likedMemes={likedMemes}
+            comments={comments}
+          />
+        ) : (
+          <Conversation suid={userToChat} setUsertoChat={setUsertoChat} />
+        )}
       </div>
       <div className="col-span-4 col border-l-1 border-gray-300">
-        <div className="fixed top-0 hidden md:block">
-          <div className="flex gap-3 justify-items-start items-center my-5 px-5">
-            <img className="h-12 rounded-full" src={currentUser[0]?.profile} />
-            <div>
-              <p className="text-sm tracking-wider font-semibold">
-                {currentUser[0]?.username}
-              </p>
-              <p className="text-sm text-gray-500">
-                {currentUser[0]?.fullname}
-              </p>
-            </div>
-          </div>
-          <div className="w-screen h-0.1 border border-b-gray-50 "></div>
-          <div className="px-5 mt-3">
-            <p className="font-bold text-gray-500 tracking-wide">Friends</p>
-            {users.map((user, i) => {
-              if (user.username === username) return null; // Don't display the current user in the list
-              return (
-                <div key={i} className="flex justify-between items-center my-3">
-                  <div className="flex gap-3 items-center">
-                    <img
-                      className="h-12 w-12 rounded-full aspect-square"
-                      src={user.profile}
-                    />
-                    <div>
-                      <p className="text-sm tracking-wider font-semibold">
-                        {user.username}
-                      </p>
-                      <p className="text-sm text-gray-500 dark:text-red-500">
-                        {user.fullname}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="">
-                    <label className="text-blue-700 font-bold text-sm">
-                      Follow
-                    </label>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        <AllUsers
+          currentUser={currentUser}
+          users={users}
+          username={username}
+          setUsertoChat={setUsertoChat}
+        />
       </div>
     </div>
   );

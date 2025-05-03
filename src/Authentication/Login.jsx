@@ -43,7 +43,7 @@ const Login = () => {
     try {
       const response = await dispatch(login(credentials)).unwrap();
       if (response.status === 200) {
-        toast.success("Login successful!", { autoClose: 1000 });
+        toast.success("Login successful!", { autoClose: 500 });
         localStorage.setItem("Token", response.data.token);
         values.email === localStorage.getItem("username")
           ? navigate(`${localStorage.getItem("LastVisitedPath")}`)

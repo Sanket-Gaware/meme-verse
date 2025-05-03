@@ -1,11 +1,11 @@
 import React from "react";
 import "../App.css";
-const TopBar = ({ currentUser, users, username }) => {
+const TopBar = ({ currentUser, users, username, setUsertoChat }) => {
   return (
-    <div className="w-full border-b border-gray-200 bg-white sticky top-0 z-50">
+    <div className="w-full border-b border-gray-200 bg-white sticky top-0 z-50 md:hidden">
       <div className="flex overflow-x-auto no-scrollbar px-4 py-3 gap-4">
         {/* Current User Story */}
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center flex-shrink-0">
           <img
             className="h-14 w-14 rounded-full border-2 border-pink-500 object-cover"
             src={currentUser[0]?.profile}
@@ -18,7 +18,11 @@ const TopBar = ({ currentUser, users, username }) => {
         {users.map((user, i) => {
           if (user.username === username) return null;
           return (
-            <div key={i} className="flex flex-col items-center">
+            <div
+              key={i}
+              className="flex flex-col items-center flex-shrink-0"
+              onClick={() => setUsertoChat(user._id)}
+            >
               <img
                 className="h-14 w-14 rounded-full border-2 border-pink-500 object-cover"
                 src={user.profile}
