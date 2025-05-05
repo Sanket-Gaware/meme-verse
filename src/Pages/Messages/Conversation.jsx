@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import SendBar from "./SendBar";
 import useSocket from "../../Components/useSocket";
@@ -16,8 +16,16 @@ const Conversation = ({ suid, setUsertoChat }) => {
   const [sid, setSid] = useState(null);
   const { users } = useSelector((state) => state.meme);
 
+  const chatContainerRef = useRef(null);
+
   //socket connection
   const socket = useSocket("https://node-js-view-point.onrender.com");
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   useEffect(() => {
     handleSelectedUser(suid);
@@ -62,7 +70,7 @@ const Conversation = ({ suid, setUsertoChat }) => {
 
   return (
     <div className="col-span-8 text-center overflow-y-hidden px-0">
-      <div className="h-screen w-full p-1 sm:p-5 md:p-0 lg:p-0 m-0">
+      <div className="md:h-screen h-[calc(100vh-40px)] w-full p-1 sm:p-5 md:p-0 lg:p-0 m-0 ">
         <div
           className="flex flex-col h-full w-full bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/chatbg.jpg')" }}
@@ -100,7 +108,10 @@ const Conversation = ({ suid, setUsertoChat }) => {
           {/* Messages + Input */}
           <div className="flex flex-col flex-grow overflow-hidden">
             {/* Message area */}
-            <div className="flex-grow overflow-y-auto p-2 no-scrollbar">
+            <div
+              className="flex-grow overflow-y-auto p-2 no-scrollbar"
+              ref={chatContainerRef}
+            >
               {messages.length > 0 ? (
                 messages.map((data, i) => (
                   <div

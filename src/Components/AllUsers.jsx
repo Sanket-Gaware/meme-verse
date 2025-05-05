@@ -2,7 +2,7 @@ import React from "react";
 
 export const AllUsers = ({ currentUser, users, username, setUsertoChat }) => {
   return (
-    <div className="fixed top-0 hidden md:block">
+    <div className="md:mb-0 mb-5">
       <div className="flex gap-3 justify-items-start items-center my-5 px-5">
         <img className="h-12 rounded-full" src={currentUser[0]?.profile} />
         <div>
@@ -21,10 +21,7 @@ export const AllUsers = ({ currentUser, users, username, setUsertoChat }) => {
             <div key={i} className="flex justify-between items-center my-3">
               <div
                 className="flex gap-3 items-center"
-                onClick={() => {
-                  setUsertoChat(null);
-                  setUsertoChat(user._id);
-                }}
+                onClick={() => setUsertoChat(user._id)}
               >
                 <img
                   className="h-12 w-12 rounded-full aspect-square"
@@ -39,11 +36,11 @@ export const AllUsers = ({ currentUser, users, username, setUsertoChat }) => {
                   </p>
                 </div>
               </div>
-              <div className="">
+              {/* <div className="">
                 <label className="text-blue-700 font-bold text-sm">
                   Follow
                 </label>
-              </div>
+              </div> */}
             </div>
           );
         })}

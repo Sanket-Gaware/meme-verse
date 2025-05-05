@@ -207,6 +207,7 @@ const memeSlice = createSlice({
     memes: [],
     users: [],
     userMemes: [],
+    allUsersMemes: [],
     likedMemes: ["119215120", "322841258", "188390779", "247375501"],
     comments: {
       [221578498]: ["awsome", "Nice one"],
@@ -266,13 +267,25 @@ const memeSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      .addCase(getUserMemes.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getUserMemes.fulfilled, (state, action) => {
+        state.loading = false;
+        state.userMemes = action.payload;
+      })
+      .addCase(getUserMemes.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       .addCase(getAllMemes.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(getAllMemes.fulfilled, (state, action) => {
         state.loading = false;
-        state.userMemes = action.payload;
+        state.allUsersMemes = action.payload;
       })
       .addCase(getAllMemes.rejected, (state, action) => {
         state.loading = false;

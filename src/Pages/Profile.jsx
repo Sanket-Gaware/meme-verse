@@ -14,23 +14,32 @@ import { deleteUserMeme, getUserMemes } from "../Store/memeSlice";
 
 const Profile = () => {
   const username = localStorage.getItem("username");
-  const { users } = useSelector((state) => state.meme);
+  const { users, userMemes } = useSelector((state) => state.meme);
   const currentUser = users.filter((user) => user.username == username);
   const navigate = useNavigate();
   const [selectedMeme, setSelectedMeme] = useState(null);
-  // const { userMemes } = useSelector((state) => state.meme);
   const dispatch = useDispatch();
   const [newUserMemes, setNewUserMemes] = useState([]);
 
   useEffect(() => {
-    console.log("useEffect");
-    handleGetUserMemes();
+    userMemes == ""
+      ? handleGetUserMemes()
+      : setNewUserMemes(
+          userMemes.data.map((meme) => ({
+            box_count: meme.box_count,
+            captions: meme.caption,
+            id: meme._id,
+            name: meme.title,
+            url: meme.image,
+            uploadedBy: meme.uploadedBy,
+          }))
+        );
   }, []);
 
   const handleGetUserMemes = async () => {
     try {
       const response = await dispatch(getUserMemes(username)).unwrap();
-      console.log(response);
+      // console.log(response);
       setNewUserMemes(
         response.data.map((meme) => ({
           box_count: meme.box_count,
@@ -41,6 +50,7 @@ const Profile = () => {
           uploadedBy: meme.uploadedBy,
         }))
       );
+      // console.log(newUserMemes);
     } catch (error) {
       console.error("Failed to fetch memes:", error);
     }
