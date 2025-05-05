@@ -8,9 +8,10 @@ const SendBar = ({ id, sid, socket }) => {
 
   const SendMsg = () => {
     if (sendMessage.trim() === "" || !id._id) return;
+    const BaseUrl = import.meta.env.VITE_BASE_URL;
     axios
       .post(
-        `https://node-js-view-point.onrender.com/api/messages/sendmessage/${id._id}`,
+        `${BaseUrl}api/messages/sendmessage/${id._id}`,
         { message: sendMessage },
         {
           headers: {

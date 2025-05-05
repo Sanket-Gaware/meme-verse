@@ -4,7 +4,6 @@ import SendBar from "./SendBar";
 import useSocket from "../../Components/useSocket";
 import { ArrowLeft, Phone, Video, MoreVertical } from "lucide-react";
 import { useSelector } from "react-redux";
-import { AllUsers } from "../../Components/AllUsers";
 
 const Conversation = ({ suid, setUsertoChat }) => {
   const [chatUser, setChatUser] = useState("");
@@ -17,9 +16,11 @@ const Conversation = ({ suid, setUsertoChat }) => {
   const { users } = useSelector((state) => state.meme);
 
   const chatContainerRef = useRef(null);
+  //base url
+  const BaseUrl = import.meta.env.VITE_BASE_URL;
 
   //socket connection
-  const socket = useSocket("https://node-js-view-point.onrender.com");
+  const socket = useSocket(`${BaseUrl}`);
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
@@ -44,7 +45,7 @@ const Conversation = ({ suid, setUsertoChat }) => {
     setChatUser(users.find((user) => user._id === id));
 
     axios
-      .get(`https://node-js-view-point.onrender.com/api/messages/${id}`, {
+      .get(`${BaseUrl}api/messages/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
