@@ -27,6 +27,7 @@ const Inbox = () => {
       } else if (participients.includes(sid)) {
         const otherUserId = participients.find((id) => id !== sid);
         dispatch(incrementUnread(otherUserId));
+        playNotificationSound();
       }
     };
 
@@ -37,7 +38,10 @@ const Inbox = () => {
   const handleBack = () => {
     setUsertoChat(null);
   };
-
+  const playNotificationSound = () => {
+    const audio = new Audio("/sound/adu1.mp3");
+    audio.play();
+  };
   return (
     <div className="w-full h-screen overflow-hidden">
       {/* Desktop layout */}
