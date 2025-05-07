@@ -24,7 +24,8 @@ const Profile = () => {
   useEffect(() => {
     userMemes == ""
       ? handleGetUserMemes()
-      : setNewUserMemes(
+      : userMemes.message == `Memes uploaded by ${username}`
+      ? setNewUserMemes(
           userMemes.data.map((meme) => ({
             box_count: meme.box_count,
             captions: meme.caption,
@@ -33,7 +34,8 @@ const Profile = () => {
             url: meme.image,
             uploadedBy: meme.uploadedBy,
           }))
-        );
+        )
+      : handleGetUserMemes();
   }, []);
 
   const handleGetUserMemes = async () => {
@@ -55,15 +57,6 @@ const Profile = () => {
       console.error("Failed to fetch memes:", error);
     }
   };
-
-  // const newUserMemes = userMemes.data.map((meme) => ({
-  //   box_count: meme.box_count,
-  //   captions: meme.caption,
-  //   id: meme._id,
-  //   name: meme.title,
-  //   url: meme.image,
-  //   uploadedBy: meme.uploadedBy,
-  // }));
 
   const user = {
     username: "meme_master",
@@ -219,7 +212,7 @@ const Profile = () => {
               className="aspect-square w-auto md:h-90 h-50 object-cover flex mx-auto"
             />
             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
-              <Heart color="white" size={32} />
+              <Heart color="white" fill="white" size={32} />
             </div>
           </div>
         ))}

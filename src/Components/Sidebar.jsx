@@ -4,6 +4,7 @@ import {
   HeartIcon,
   HomeIcon,
   LogOut,
+  MessagesSquare,
   SearchIcon,
   UploadCloudIcon,
 } from "lucide-react";
@@ -75,6 +76,12 @@ function Sidebar() {
               className="flex gap-3 text-lg mb-10 cursor-pointer hover:text-blue-800"
             >
               <HomeIcon /> Home
+            </NavLink>
+            <NavLink
+              to="/messages"
+              className="flex gap-3 text-lg mb-10 cursor-pointer  hover:text-blue-800"
+            >
+              <MessagesSquare size={28} /> Messages
             </NavLink>
             <NavLink
               to="search"

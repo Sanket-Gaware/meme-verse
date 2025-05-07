@@ -75,6 +75,7 @@ function Home() {
             currentUser={currentUser}
             users={users}
             username={username}
+            home={true}
           />
         </div>
       </div>

@@ -20,7 +20,27 @@ export const sendOtp = createAsyncThunk(
     }
   }
 );
-
+export const getLastMessage = createAsyncThunk(
+  "auth/lastMessage",
+  async (id, { rejectWithValue }) => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    try {
+      const response = await axios.get(
+        `${BASE_URL}api/messages/getlastmessage/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("Token")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response;
+    } catch (error) {
+      const errMsg = error.response?.data?.msg || "Something went wrong!";
+      return rejectWithValue(errMsg);
+    }
+  }
+);
 // setNewPassword Thunk
 export const setNewPassword = createAsyncThunk(
   "auth/setNewPassword",
@@ -229,6 +249,7 @@ const memeSlice = createSlice({
   initialState: {
     memes: [],
     users: [],
+    unreadCounts: {},
     userMemes: [],
     allUsersMemes: [],
     likedMemes: ["119215120", "322841258", "188390779", "247375501"],
@@ -260,9 +281,18 @@ const memeSlice = createSlice({
     setMemes: (state, action) => {
       state.memes = action.payload;
     },
-    // addMeme: (state, action) => {
-    //   state.memes = [action.payload, ...state.memes];
-    // },
+    incrementUnread: (state, action) => {
+      const id = action.payload;
+      if (state.unreadCounts[id]) {
+        state.unreadCounts[id]++;
+      } else {
+        state.unreadCounts[id] = 1;
+      }
+    },
+    resetUnread: (state, action) => {
+      const id = action.payload;
+      state.unreadCounts[id] = 0;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -316,5 +346,6 @@ const memeSlice = createSlice({
       });
   },
 });
-export const { likeMeme, addComment, setMemes } = memeSlice.actions;
+export const { likeMeme, addComment, setMemes, incrementUnread, resetUnread } =
+  memeSlice.actions;
 export default memeSlice.reducer;
