@@ -30,7 +30,7 @@ const Conversation = ({ suid, setUsertoChat }) => {
 
   useEffect(() => {
     handleSelectedUser(suid);
-  }, [users]);
+  }, [suid]);
 
   //current_user
   const currentUser = users.find((user) => user.username === username);
@@ -73,8 +73,8 @@ const Conversation = ({ suid, setUsertoChat }) => {
     <div className="col-span-8 text-center overflow-y-hidden px-0">
       <div className="md:h-screen h-[calc(100vh-40px)] w-full p-1 sm:p-5 md:p-0 lg:p-0 m-0 ">
         <div
-          className="flex flex-col h-full w-full bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/chatbg.jpg')" }}
+          className="flex flex-col h-full w-full bg-cover bg-center bg-no-repeat bg-[#ebf2f3]"
+          // style={{ backgroundImage: "url('/chatbg.jpg')" }}
         >
           {/* Header */}
           <div className="bg-[#ebd0f8] p-2 py-4 flex justify-between items-center">
