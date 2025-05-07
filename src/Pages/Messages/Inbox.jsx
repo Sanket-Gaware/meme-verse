@@ -42,6 +42,7 @@ const Inbox = () => {
     const audio = new Audio("/sound/adu1.mp3");
     audio.play();
   };
+
   return (
     <div className="w-full h-screen overflow-hidden">
       {/* Desktop layout */}
