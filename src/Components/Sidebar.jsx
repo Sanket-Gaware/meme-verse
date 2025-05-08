@@ -17,6 +17,7 @@ function Sidebar() {
   const username = localStorage.getItem("username");
   const { users } = useSelector((state) => state.meme);
   const currentUser = users?.filter((user) => user.username == username);
+  const { unreadUserCounts } = useSelector((state) => state.meme);
 
   const showLogoutToast = () => {
     toast.custom((t) => (
@@ -81,7 +82,13 @@ function Sidebar() {
               to="/messages"
               className="flex gap-3 text-lg mb-10 cursor-pointer  hover:text-blue-800"
             >
-              <MessagesSquare size={28} /> Messages
+              <MessagesSquare size={28} />
+              {unreadUserCounts?.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] px-1.5 py-[1px] rounded-full">
+                  {unreadUserCounts?.length}
+                </span>
+              )}{" "}
+              Messages
             </NavLink>
             <NavLink
               to="search"

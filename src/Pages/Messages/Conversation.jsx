@@ -3,7 +3,7 @@ import axios from "axios";
 import SendBar from "./SendBar";
 import { ArrowLeft, Phone, Video, MoreVertical } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { resetUnread } from "../../Store/memeSlice";
+import { resetUnread, setUserToChatR } from "../../Store/memeSlice";
 
 const Conversation = ({ suid, setUsertoChat, socket }) => {
   const [chatUser, setChatUser] = useState("");
@@ -79,7 +79,10 @@ const Conversation = ({ suid, setUsertoChat, socket }) => {
             <div className="flex items-center gap-2">
               <button
                 className="cursor-pointer"
-                onClick={() => setUsertoChat(null)}
+                onClick={() => {
+                  setUsertoChat(null);
+                  dispatch(setUserToChatR(""));
+                }}
               >
                 <ArrowLeft />
               </button>

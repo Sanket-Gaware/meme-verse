@@ -249,6 +249,8 @@ const memeSlice = createSlice({
   initialState: {
     memes: [],
     users: [],
+    userToChat: "",
+    unreadUserCounts: [],
     unreadCounts: {},
     userMemes: [],
     allUsersMemes: [],
@@ -280,6 +282,18 @@ const memeSlice = createSlice({
     },
     setMemes: (state, action) => {
       state.memes = action.payload;
+    },
+    setUserToChatR: (state, action) => {
+      state.userToChat = action.payload;
+    },
+    addUnreadUserCounts: (state, action) => {
+      const userId = action.payload;
+      if (!state.unreadUserCounts.includes(userId)) {
+        state.unreadUserCounts.push(userId);
+      }
+    },
+    clearUnreadUserCounts: (state) => {
+      state.unreadUserCounts = [];
     },
     incrementUnread: (state, action) => {
       const id = action.payload;
@@ -346,6 +360,14 @@ const memeSlice = createSlice({
       });
   },
 });
-export const { likeMeme, addComment, setMemes, incrementUnread, resetUnread } =
-  memeSlice.actions;
+export const {
+  likeMeme,
+  addComment,
+  setMemes,
+  setUserToChatR,
+  addUnreadUserCounts,
+  clearUnreadUserCounts,
+  incrementUnread,
+  resetUnread,
+} = memeSlice.actions;
 export default memeSlice.reducer;

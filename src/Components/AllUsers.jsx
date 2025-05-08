@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getLastMessage, resetUnread } from "../Store/memeSlice";
+import {
+  getLastMessage,
+  resetUnread,
+  setUserToChatR,
+} from "../Store/memeSlice";
 
 export const AllUsers = ({
   currentUser,
@@ -15,6 +19,7 @@ export const AllUsers = ({
 
   const handleUserClick = (userId) => {
     setUsertoChat(userId);
+    dispatch(setUserToChatR(userId));
     dispatch(resetUnread(userId)); // Clear unread messages for this user
   };
 

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { AllUsers } from "../../Components/AllUsers";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Conversation from "./Conversation";
 import useSocket from "../../Components/useSocket";
-import { incrementUnread } from "../../Store/memeSlice";
+import { clearUnreadUserCounts } from "../../Store/memeSlice";
+// import { incrementUnread } from "../../Store/memeSlice";
 
 const Inbox = () => {
   const { users } = useSelector((state) => state.meme);
@@ -15,32 +16,10 @@ const Inbox = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!socket || !currentUser) return;
-
-    const handleNewMessage = ({ participients }) => {
-      const sid = currentUser._id;
-      const rid = userToChat; // this will be null if no chat is open
-
-      if (participients.includes(rid)) {
-        // chat already open, Conversation will handle this
-        return;
-      } else if (participients.includes(sid)) {
-        const otherUserId = participients.find((id) => id !== sid);
-        dispatch(incrementUnread(otherUserId));
-        playNotificationSound();
-      }
-    };
-
-    socket.on("sendMessage", handleNewMessage);
-    return () => socket.off("sendMessage", handleNewMessage);
-  }, [socket, currentUser, userToChat]);
-
+    dispatch(clearUnreadUserCounts());
+  }, []);
   const handleBack = () => {
     setUsertoChat(null);
-  };
-  const playNotificationSound = () => {
-    const audio = new Audio("/sound/adu1.mp3");
-    audio.play();
   };
 
   return (

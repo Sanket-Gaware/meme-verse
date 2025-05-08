@@ -1,5 +1,7 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useMemo } from "react";
+import { useSelector } from "react-redux";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import useGlobalMessageListener from "../Components/useGlobalMessageListener";
 
 const Login = React.lazy(() => import("../Authentication/Login"));
 const DontHaveAccount = React.lazy(() =>
@@ -77,6 +79,17 @@ const RouteFile = () => {
       element: <PageNotFound />,
     },
   ]);
+
+  const { users } = useSelector((state) => state.meme);
+  const username = localStorage.getItem("username");
+  const { userToChat } = useSelector((state) => state.meme);
+
+  // Wait for currentUser to be available
+  const currentUser = useMemo(() => {
+    return users.find((user) => user.username === username);
+  }, [users, username]);
+
+  useGlobalMessageListener(currentUser, userToChat);
   return (
     <>
       <Suspense fallback={<Loader />}>
