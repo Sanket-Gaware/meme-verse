@@ -21,17 +21,38 @@ const useGlobalMessageListener = (currentUser, userToChat) => {
     if (!socket || !currentUser?._id) return;
 
     const handleNewMessage = ({ participients }) => {
-      const sid = currentUser._id;
-      const rid = userToChat; // may be null
+      //   const sid = currentUser._id;
+      //   const rid = userToChat;
 
+      //   if (participients.includes(rid)) {
+      //     playMsgSound();
+      //   }
+
+      //   if (participients.includes(sid)) {
+      //     const otherUserId = participients.find((id) => id !== sid);
+
+      //     if (otherUserId && otherUserId !== currentUser._id) {
+      //       dispatch(incrementUnread(otherUserId));
+      //       dispatch(addUnreadUserCounts(otherUserId));
+      //       playNotificationSound();
+      //     }
+      //   }
+      // };
+
+      const sid = currentUser._id; // your id
+      const rid = userToChat; // id of user you're currently chatting with (may be null)
+
+      // ✅ You're chatting with this user, so don't show badge — just play message sound
       if (participients.includes(rid)) {
-        playMsgSound();
+        playMsgSound(); // message came from user you're chatting with
+        return;
       }
 
+      // ✅ You're one of the participients but not actively chatting with the sender
       if (participients.includes(sid)) {
         const otherUserId = participients.find((id) => id !== sid);
-        if (otherUserId !== sid) {
-          //   console.log("on");   
+
+        if (otherUserId) {
           dispatch(incrementUnread(otherUserId));
           dispatch(addUnreadUserCounts(otherUserId));
           playNotificationSound();
