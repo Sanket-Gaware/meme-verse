@@ -42,13 +42,11 @@ const useGlobalMessageListener = (currentUser, userToChat) => {
       const sid = currentUser._id; // your id
       const rid = userToChat; // id of user you're currently chatting with (may be null)
 
-      // ✅ You're chatting with this user, so don't show badge — just play message sound
       if (participients.includes(rid)) {
-        playMsgSound(); // message came from user you're chatting with
+        playMsgSound();
         return;
       }
-
-      // ✅ You're one of the participients but not actively chatting with the sender
+      
       if (participients.includes(sid)) {
         const otherUserId = participients.find((id) => id !== sid);
 

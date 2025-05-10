@@ -72,8 +72,8 @@ const Conversation = ({ suid, setUsertoChat, socket }) => {
   }, [socket, rid, sid]);
 
   return (
-    <div className="col-span-8 text-center overflow-y-hidden px-0">
-      <div className="h-[calc(100vh-100px)]  md:h-screen w-full overflow-y-hidden p-1 sm:p-5 md:p-0 lg:p-0 md:mb-0 mb-">
+    <div className="col-span-8 text-center overflow-y-hidden p-0">
+      <div className="h-[calc(100vh-40px)]  md:h-screen w-full overflow-y-hidden p-0 sm:p-5 md:p-0 lg:p-0 md:mb-0 mb-">
         <div className="flex flex-col h-full w-full bg-cover bg-center bg-no-repeat bg-[#ebf2f3]">
           <div className="bg-[#ebd0f8] p-2 py-4 flex justify-between items-center">
             <div className="flex items-center gap-2">

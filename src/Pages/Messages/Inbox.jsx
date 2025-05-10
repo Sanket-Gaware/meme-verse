@@ -23,7 +23,7 @@ const Inbox = () => {
   };
 
   return (
-    <div className="w-full h-screen overflow-hidden">
+    <div className="w-full overflow-hidden">
       {/* Desktop layout */}
       <div className="hidden md:grid grid-cols-12 h-full">
         <div className="col-span-4">
@@ -35,7 +35,7 @@ const Inbox = () => {
           />
         </div>
 
-        <div className="relative h-full col-span-8">
+        <div className="h-full col-span-8">
           {userToChat ? (
             <Conversation
               suid={userToChat}

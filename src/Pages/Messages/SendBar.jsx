@@ -48,13 +48,13 @@ const SendBar = ({ id, sid, socket }) => {
         className="p-2 rounded-full bg-gray-200 transition hover:bg-gray-50"
         onClick={() => console.log("Attach File")}
       >
-        <Paperclip size={24} className="text-gray-500 " />
+        <Paperclip size={20} className="text-gray-500" />
       </button>
       <button
         onClick={SendMsg}
         className="p-2  rounded-full bg-blue-600 hover:bg-blue-700 transition text-white"
       >
-        <Send size={24} weight="fill" />
+        <Send size={20} weight="fill " />
       </button>
     </div>
   );
