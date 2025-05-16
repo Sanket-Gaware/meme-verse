@@ -27,7 +27,7 @@ const Inbox = () => {
       {/* Desktop layout */}
       <div className="hidden md:grid grid-cols-12 h-full">
         <div className="col-span-4">
-          <AllUsers
+          <AllUsers 
             currentUser={[currentUser]}
             users={users}
             username={username}
