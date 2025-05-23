@@ -1,4 +1,4 @@
-import {
+ import {
   CircleX,
   Heart,
   LogOut,
@@ -6,7 +6,7 @@ import {
   Share2Icon,
   Trash2,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";

@@ -114,7 +114,8 @@ import {
   resetUnread,
   setUserToChatR,
 } from "../Store/memeSlice";
-import { ArrowLeft, CheckCheck } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export const AllUsers = ({
   currentUser,
@@ -124,6 +125,7 @@ export const AllUsers = ({
   home,
 }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { unreadCounts } = useSelector((state) => state.meme);
   const [lastMessages, setLastMessages] = useState({});
 
@@ -187,7 +189,10 @@ export const AllUsers = ({
   return (
     <div className="md:mb-0 mb-5">
       <div className="flex gap-3 items-center my-5 px-5">
-        <button className="cursor-pointer md:hidden" onClick={() => {}}>
+        <button
+          className="cursor-pointer md:hidden"
+          onClick={() => navigate("/home")}
+        >
           <ArrowLeft />
         </button>
         <img
@@ -205,7 +210,7 @@ export const AllUsers = ({
       <div className="border-b border-gray-200 mx-5" />
       <div className="px-5 mt-3">
         <p className="font-bold text-gray-500 tracking-wide mb-3">Friends</p>
-        {sortedUsers.map((user, i) => (
+        {sortedUsers.map((user) => (
           <div
             key={user._id}
             className="flex justify-between items-center my-3 cursor-pointer"
