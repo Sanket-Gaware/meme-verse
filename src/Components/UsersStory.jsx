@@ -169,6 +169,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, CircleX } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllStories } from "../Store/memeSlice";
 
 const UsersStory = ({ user, onClose }) => {
   const stories = user?.stories || [
@@ -189,9 +191,26 @@ const UsersStory = ({ user, onClose }) => {
   const [exit, setExit] = useState(false);
   const videoRef = useRef(null);
   const durationRef = useRef(5000);
-
+  const dispatch = useDispatch();
   const currentStory = stories[current];
   const isVideo = currentStory.type === "video";
+  const { allStories } = useSelector((state) => state.meme);
+  // const [stories, setStories] = useState([]);
+
+  // allStories !== null ? Stories() : setStories(allStories);
+
+  allStories === null ? Stories() : "";
+
+  const Stories = async () => {
+    try {
+      const response = await dispatch(getAllStories()).unwrap();
+
+      console.log(response);
+      console.log("story:");
+    } catch (error) {
+      console.error("Error fetching user story:", error);
+    }
+  };
 
   useEffect(() => {
     // Set duration depending on type

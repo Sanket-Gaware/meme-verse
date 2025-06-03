@@ -1,6 +1,25 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+export const getAllStories = createAsyncThunk(
+  "memes/getstories",
+  async (_, { rejectWithValue }) => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    const VITE_GET_ALL_STORIES = import.meta.env.VITE_GET_ALL_STORIES;
+    try {
+      const response = await axios.get(`${BASE_URL}${VITE_GET_ALL_STORIES}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("Token")}`,
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
 export const sendOtp = createAsyncThunk(
   "auth/sendOtp",
   async (email, { rejectWithValue }) => {
@@ -254,6 +273,7 @@ const memeSlice = createSlice({
     unreadCounts: {},
     userMemes: [],
     allUsersMemes: [],
+    allStories: [],
     likedMemes: ["119215120", "322841258", "188390779", "247375501"],
     comments: {
       [221578498]: ["awsome", "Nice one"],
@@ -355,6 +375,18 @@ const memeSlice = createSlice({
         state.allUsersMemes = action.payload;
       })
       .addCase(getAllMemes.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getAllStories.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllStories.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allStories = action.payload;
+      })
+      .addCase(getAllStories.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
