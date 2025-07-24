@@ -384,7 +384,7 @@ const memeSlice = createSlice({
       })
       .addCase(getAllStories.fulfilled, (state, action) => {
         state.loading = false;
-        state.allStories = action.payload;
+        state.allStories = action.payload.data;
       })
       .addCase(getAllStories.rejected, (state, action) => {
         state.loading = false;
