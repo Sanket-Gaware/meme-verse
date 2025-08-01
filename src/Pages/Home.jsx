@@ -14,6 +14,7 @@ function Home() {
   const { memes, users, loading, error, likedMemes, comments, allUsersMemes } =
     useSelector((state) => state.meme);
   const [newMemes, setNewMemes] = useState(memes);
+  const { hasFetchedAllMemes } = useSelector((state) => state.meme);
 
   // const handleUserMemes = async () => {
   //   try {
@@ -64,26 +65,48 @@ function Home() {
   }, []);
 
   // Main fetch logic - guaranteed to run only once
-  const init = useCallback(async () => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
+  // const init = useCallback(async () => {
+  //   if (hasFetched.current) return;
+  //   hasFetched.current = true;
 
-    try {
-      await dispatch(fetchMemes()).unwrap();
-      await dispatch(fetchUsers()).unwrap();
+  //   try {
+  //     await dispatch(fetchMemes()).unwrap();
+  //     await dispatch(fetchUsers()).unwrap();
 
-      if (!allUsersMemes || allUsersMemes === "") {
-        const response = await dispatch(getAllMemes()).unwrap();
-        const userMemes = processUserMemes(response.data);
-        setNewMemes(memes.concat(userMemes));
-      } else {
-        const userMemes = processUserMemes(allUsersMemes.data);
-        setNewMemes(memes.concat(userMemes));
-      }
-    } catch (error) {
-      console.error("Fetch error:", error);
+  //     if (!allUsersMemes || allUsersMemes === "") {
+  //       const response = await dispatch(getAllMemes()).unwrap();
+  //       const userMemes = processUserMemes(response.data);
+  //       setNewMemes(memes.concat(userMemes));
+  //     } else {
+  //       const userMemes = processUserMemes(allUsersMemes.data);
+  //       setNewMemes(memes.concat(userMemes));
+  //     }
+  //   } catch (error) {
+  //     console.error("Fetch error:", error);
+  //   }
+  // }, [dispatch, memes, allUsersMemes, processUserMemes]);
+
+const init = useCallback(async () => {
+  if (hasFetched.current) return;
+  hasFetched.current = true;
+
+  try {
+    await dispatch(fetchMemes()).unwrap();
+    await dispatch(fetchUsers()).unwrap();
+
+    if (!hasFetchedAllMemes) {
+      const response = await dispatch(getAllMemes()).unwrap();
+      const userMemes = processUserMemes(response.data);
+      setNewMemes(memes.concat(userMemes));
+    } else {
+      const userMemes = processUserMemes(allUsersMemes.data);
+      setNewMemes(memes.concat(userMemes));
     }
-  }, [dispatch, memes, allUsersMemes, processUserMemes]);
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
+}, [dispatch, memes, allUsersMemes, hasFetchedAllMemes, processUserMemes]);
+
 
   // Single effect that runs the init function once
   useEffect(() => {

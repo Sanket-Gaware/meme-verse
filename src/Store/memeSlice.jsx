@@ -274,6 +274,8 @@ const memeSlice = createSlice({
     userMemes: [],
     allUsersMemes: [],
     allStories: [],
+    hasFetchedAllMemes: false,
+    lastMessages: {},
     likedMemes: ["119215120", "322841258", "188390779", "247375501"],
     comments: {
       [221578498]: ["awsome", "Nice one"],
@@ -327,6 +329,11 @@ const memeSlice = createSlice({
       const id = action.payload;
       state.unreadCounts[id] = 0;
     },
+    setLastMessage: (state, action) => {
+      const { userId, message } = action.payload;
+      state.lastMessages[userId] = message;
+    },
+
   },
   extraReducers: (builder) => {
     builder
@@ -370,10 +377,16 @@ const memeSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
+      // .addCase(getAllMemes.fulfilled, (state, action) => {
+      //   state.loading = false;
+      //   state.allUsersMemes = action.payload;
+      // })
       .addCase(getAllMemes.fulfilled, (state, action) => {
-        state.loading = false;
-        state.allUsersMemes = action.payload;
-      })
+  state.loading = false;
+  state.allUsersMemes = action.payload;
+  state.hasFetchedAllMemes = true;
+})
+
       .addCase(getAllMemes.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
@@ -390,6 +403,7 @@ const memeSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       });
+     
   },
 });
 export const {
@@ -401,5 +415,6 @@ export const {
   clearUnreadUserCounts,
   incrementUnread,
   resetUnread,
+  setLastMessage,
 } = memeSlice.actions;
 export default memeSlice.reducer;

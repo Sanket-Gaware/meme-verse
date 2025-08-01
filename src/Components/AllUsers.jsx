@@ -127,7 +127,8 @@ export const AllUsers = ({
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { unreadCounts } = useSelector((state) => state.meme);
-  const [lastMessages, setLastMessages] = useState({});
+  // const [lastMessages, setLastMessages] = useState({});
+const lastMessages = useSelector((state) => state.meme.lastMessages);
 
   const handleUserClick = (userId) => {
     setUsertoChat(userId);
@@ -135,25 +136,59 @@ export const AllUsers = ({
     dispatch(resetUnread(userId)); // Clear unread messages for this user
   };
 
-  const LastMessage = async (id) => {
-    try {
-      const response = await dispatch(getLastMessage(id)).unwrap();
-      setLastMessages((prev) => ({
-        ...prev,
-        [id]: response.data?.message || "No message yet",
-      }));
-    } catch (error) {
-      console.log(error);
+  // const LastMessage = async (id) => {
+  //   try {
+  //     const response = await dispatch(getLastMessage(id)).unwrap();
+  //     setLastMessages((prev) => ({
+  //       ...prev,
+  //       [id]: response.data?.message || "No message yet",
+  //     }));
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+const LastMessage = async (id) => {
+  try {
+    const response = await dispatch(getLastMessage(id)).unwrap();
+    dispatch(
+      setLastMessage({
+        userId: id,
+        message: response.data?.message || "No message yet",
+      })
+    );
+  } catch (error) {
+    if (error?.response?.status === 404) {
+      dispatch(
+        setLastMessage({
+          userId: id,
+          message: "No message yet",
+        })
+      );
+    } else {
+      console.error("Failed to fetch last message:", error);
     }
-  };
+  }
+};
 
-  useEffect(() => {
-    users.forEach((user) => {
-      if (user.username !== username) {
-        LastMessage(user._id);
-      }
-    });
-  }, [users, username]);
+
+  // useEffect(() => {
+  //   users.forEach((user) => {
+  //     if (user.username !== username) {
+  //       LastMessage(user._id);
+  //     }
+  //   });
+  // }, [users, username]);
+useEffect(() => {
+  users.forEach((user) => {
+    if (
+      user.username !== username &&
+      !lastMessages[user._id] 
+    ) {
+      LastMessage(user._id);
+    }
+  });
+}, [users, username, lastMessages]);
+
 
   // Sort users by:
   // 1. Has unread messages? Those go first
@@ -172,18 +207,30 @@ export const AllUsers = ({
         unread: unreadCounts[user._id] || 0,
       }));
 
-    return usersWithLastMsg.sort((a, b) => {
-      // Sort by unread count descending first
-      if ((b.unread || 0) !== (a.unread || 0)) {
-        return (b.unread || 0) - (a.unread || 0);
-      }
-      // Then by lastMsg existence (assuming newer messages come later in list)
-      if (b.lastMsg && !a.lastMsg) return 1;
-      if (a.lastMsg && !b.lastMsg) return -1;
+    // return usersWithLastMsg.sort((a, b) => {
+    //   // Sort by unread count descending first
+    //   if ((b.unread || 0) !== (a.unread || 0)) {
+    //     return (b.unread || 0) - (a.unread || 0);
+    //   }
+    //   // Then by lastMsg existence (assuming newer messages come later in list)
+    //   if (b.lastMsg && !a.lastMsg) return 1;
+    //   if (a.lastMsg && !b.lastMsg) return -1;
 
-      // Lastly, sort by username alphabetically (fallback)
-      return a.username.localeCompare(b.username);
-    });
+    //   // Lastly, sort by username alphabetically (fallback)
+    //   return a.username.localeCompare(b.username);
+    // });
+      return usersWithLastMsg.sort((a, b) => {
+        if ((b.unread || 0) !== (a.unread || 0)) {
+          return (b.unread || 0) - (a.unread || 0);
+        }
+
+        if (b.lastMsg && !a.lastMsg) return 1;
+        if (a.lastMsg && !b.lastMsg) return -1;
+
+        // Safely compare usernames
+        return (a?.username ?? "").localeCompare(b?.username ?? "");
+      });
+
   }, [users, username, lastMessages, unreadCounts]);
 
   return (
