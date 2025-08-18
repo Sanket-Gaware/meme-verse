@@ -4,11 +4,12 @@ import { MessagesSquare, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import UsersStory from "./UsersStory"; // Import the story modal component
+import AddStory from "./AddStory";
 
 const TopBar = ({ currentUser, users, username }) => {
   const navigate = useNavigate();
   const { unreadUserCounts } = useSelector((state) => state.meme);
-
+  const [showAddStory, setShowAddStory] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isStoryOpen, setIsStoryOpen] = useState(false);
 
@@ -43,7 +44,10 @@ const TopBar = ({ currentUser, users, username }) => {
         {/* Story Avatars */}
         <div className="flex overflow-x-auto no-scrollbar px-4 py-3 gap-4">
           {/* Your Story */}
-          <div className="flex flex-col items-center relative flex-shrink-0">
+          <div
+            className="flex flex-col items-center relative flex-shrink-0"
+            onClick={() => setShowAddStory(true)}
+          >
             <img
               className="h-14 w-14 rounded-full border-2 border-pink-500 object-cover"
               src={currentUser[0]?.profile}
@@ -52,6 +56,15 @@ const TopBar = ({ currentUser, users, username }) => {
             <div className="absolute bottom-3 right-0 bg-white rounded-full p-1 shadow-md">
               <Plus className="h-3 w-3 text-pink-500" />
             </div>
+            {showAddStory && (
+              <div className="fixed inset-0 z-50 bg-white flex items-center justify-center overflow-auto">
+                <AddStory
+                  userId={currentUser[0]?._id}
+                  onClose={() => setShowAddStory(false)}
+                />
+              </div>
+            )}
+
             <p className="text-xs mt-1 font-medium text-gray-700">You</p>
           </div>
 
@@ -59,10 +72,19 @@ const TopBar = ({ currentUser, users, username }) => {
           {users.map((user, i) => {
             if (user.username === username) return null;
             return (
+              // <div
+              //   key={i}
+              //   className="flex flex-col items-center flex-shrink-0 cursor-pointer"
+              //   onClick={() => openStory(user)}
+              // >
               <div
                 key={i}
                 className="flex flex-col items-center flex-shrink-0 cursor-pointer"
-                onClick={() => openStory(user)}
+                onClick={(e) => {
+                  e.preventDefault(); // Prevent default navigation or form submission
+                  e.stopPropagation(); // Stop bubbling to parent
+                  openStory(user); // Open the story modal
+                }}
               >
                 <img
                   className="h-14 w-14 rounded-full border-2 border-pink-500 object-cover"

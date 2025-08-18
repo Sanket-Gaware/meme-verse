@@ -4,73 +4,60 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllStories } from "../Store/memeSlice";
 
 const UsersStory = ({ user, onClose }) => {
-  // const stories = user?.stories || [
-  //   {
-  //     type: "image",
-  //     src: "https://img.freepik.com/free-photo/vertical-shot-river-surrounded-by-mountains-meadows-scotland_181624-27881.jpg?ga=GA1.1.460469474.1743504356&semt=ais_hybrid&w=740",
-  //   },
-  //   { type: "video", src: "https://www.w3schools.com/html/mov_bbb.mp4" },
-  //   {
-  //     type: "image",
-  //     src: "https://img.freepik.com/premium-photo/munnar-tea-plantations-with-fog-early-morning_211251-1129.jpg?ga=GA1.1.460469474.1743504356&semt=ais_hybrid&w=740",
-  //   },
-  // ];
-
   const [current, setCurrent] = useState(0);
-  const username = localStorage.getItem("username");
   const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [exit, setExit] = useState(false);
-  const videoRef = useRef(null);
-  const durationRef = useRef(5000);
-  const dispatch = useDispatch();
-  const { allStories, users } = useSelector((state) => state.meme);
   const [stories, setStories] = useState([]);
   const [currentStory, setCurrentStory] = useState(null);
-  const currentUser = users.filter((user) => user.username == username);
-  // const isVideo = currentStory?.type === "video";
 
-  // allStories !== null ? Stories() : setStories(allStories);
-
-  // allStories === null ? Stories() : "";
-  console.log(allStories.stories);
+  const dispatch = useDispatch();
+  const videoRef = useRef(null);
+  const durationRef = useRef(5000);
+  const { allStories } = useSelector((state) => state.meme);
 
   useEffect(() => {
-    const Stories = async () => {
+    const fetchStories = async () => {
       try {
         const response = await dispatch(getAllStories()).unwrap();
+        console.log(response);
+        const userStories = response?.stories?.filter(
+          (item) => item.userId._id === user._id
+        );
+        setStories(userStories);
+        setCurrentStory(userStories[0]);
+        console.log(userStories[0].mediaUrl+" <=")
+        // setCurrentStory({mediaUrl:"https://i.ibb.co/d4p5qHL5/a10.webp",mediaType:"image"})
 
-        const userStories = response?.find((item) => item.userId === user._id);
-        if (userStories?.stories?.length > 0) {
-          setStories(userStories.stories);
-        } else {
-          setStories([]);
-        }
       } catch (error) {
-        console.error("Error fetching user story:", error);
+        console.error("Error fetching stories:", error);
       }
     };
-    console.log(allStories.stories);
-    if (!allStories.stories) Stories();
-    else {
-      const userStories = allStories.stories?.find(
-        (item) => item.userId === user._id
-      );
-      setStories(userStories?.stories || []);
-    }
-    setCurrentStory(
-      stories?.filter((story) => story.userId.username == username)
-    );
 
-    // Set duration depending on type
-    if (currentStory?.mediaType === "video") {
-      durationRef.current = 30000; // 30 seconds
+    if (!allStories || !allStories?.stories) {
+      fetchStories();
     } else {
-      durationRef.current = 5000; // 5 seconds for images
+      const userStories = allStories?.stories?.filter(
+        (item) => item.userId._id === user._id
+      );
+      setStories(userStories);
+      setCurrentStory(userStories[current]);
+    }
+  }, [dispatch, user._id]);
+
+  // Auto-play progress logic
+  useEffect(() => {
+    if (!stories.length) return;
+
+    const story = stories[current];
+    setCurrentStory(story);
+    if (story.mediaType === "video") {
+      durationRef.current = 30000;
+    } else {
+      durationRef.current = 5000;
     }
 
     setProgress(0);
-
     let startTime = Date.now();
     let animationFrame;
 
@@ -84,33 +71,30 @@ const UsersStory = ({ user, onClose }) => {
         } else {
           nextStory();
         }
-      } else {
-        startTime += Date.now() - startTime; // Adjust for pause
       }
     };
 
     animationFrame = requestAnimationFrame(updateProgress);
     return () => cancelAnimationFrame(animationFrame);
-  }, [current, isPaused]);
+  }, [current, isPaused, stories]);
 
   const nextStory = () => {
     if (current + 1 < stories.length) {
       setCurrent(current + 1);
     } else {
       setExit(true);
-      setTimeout(() => onClose(), 300); // Allow fade-out
+      setTimeout(() => onClose(), 300);
     }
   };
 
   const prevStory = () => {
-    setCurrent((current - 1 + stories.length) % stories.length);
+    setCurrent((prev) => (prev - 1 + stories.length) % stories.length);
   };
 
   const handlePauseToggle = () => {
     setIsPaused((prev) => !prev);
   };
 
-  console.log(currentStory);
   return (
     <div
       onClick={handlePauseToggle}
@@ -136,16 +120,16 @@ const UsersStory = ({ user, onClose }) => {
         />
       ) : (
         <img
-          src={currentStory.mediaUrl}
+          src={currentStory?.mediaUrl}
           alt="Story"
           className="absolute inset-0 w-full h-auto object-contain md:object-cover"
         />
       )}
 
       {/* Progress Bar */}
-      <div className="absolute top-3 left-0 right-0 px-4 z-20">
+      {/*<div className="absolute top-3 left-0 right-0 px-4 z-20">
         <div className="flex space-x-1">
-          {stories.map((_, index) => (
+          {stories?.map((_, index) => (
             <div
               key={index}
               className="h-1 bg-white/30 rounded w-full overflow-hidden"
@@ -164,7 +148,7 @@ const UsersStory = ({ user, onClose }) => {
             </div>
           ))}
         </div>
-      </div>
+      </div>*/}
 
       {/* User Info */}
       <div className="absolute top-5 left-5 flex items-center z-20">

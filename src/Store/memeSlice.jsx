@@ -15,7 +15,47 @@ export const getAllStories = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
+      console.log("error redux")
       return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+export const postStoryImage = createAsyncThunk(
+  "story/postImage",
+  async (formData, { rejectWithValue }) => {
+    const POST_MEME_URL = import.meta.env.VITE_POST_MEME_URL;
+
+    try {
+      const res = await axios.post(`${POST_MEME_URL}`, formData);
+      return res;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const saveStoryToDB = createAsyncThunk(
+  "story/saveToDB",
+  async (payload, { rejectWithValue }) => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+    try {
+      const { uploadedBy, ...storyData } = payload;
+
+      const res = await axios.post(
+        `${BASE_URL}api/memes/addstory/${uploadedBy}`,
+        storyData
+        , {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("Token")}`,
+          "Content-Type": "application/json",
+        },
+      });
+      
+      return res;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
     }
   }
 );
@@ -333,7 +373,6 @@ const memeSlice = createSlice({
       const { userId, message } = action.payload;
       state.lastMessages[userId] = message;
     },
-
   },
   extraReducers: (builder) => {
     builder
@@ -382,10 +421,10 @@ const memeSlice = createSlice({
       //   state.allUsersMemes = action.payload;
       // })
       .addCase(getAllMemes.fulfilled, (state, action) => {
-  state.loading = false;
-  state.allUsersMemes = action.payload;
-  state.hasFetchedAllMemes = true;
-})
+        state.loading = false;
+        state.allUsersMemes = action.payload;
+        state.hasFetchedAllMemes = true;
+      })
 
       .addCase(getAllMemes.rejected, (state, action) => {
         state.loading = false;
@@ -403,7 +442,6 @@ const memeSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       });
-     
   },
 });
 export const {

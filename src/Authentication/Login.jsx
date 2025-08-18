@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { login } from "../Store/memeSlice";
+import Loader from "../Components/Loader";
 
 const validationSchema = yup.object({
   email: yup
@@ -195,7 +196,14 @@ const Login = () => {
             type="submit"
             className="w-full bg-[#e1307a] text-white font-semibold py-2 rounded-md hover:bg-purple-800 transition"
           >
-            {loading ? "Login..." : "Login"}
+            {loading ? (
+              <div className="flex items-center justify-center space-x-2 mx-auto">
+                <span>Login</span>
+                <div className="w-4 h-4 border-3 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+              </div>
+            ) : (
+              "Login"
+            )}
           </button>
 
           <div className="border-t border-gray-200 my-4"></div>

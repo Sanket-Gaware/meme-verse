@@ -107,12 +107,13 @@
 //   );
 // };
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo,useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   getLastMessage,
   resetUnread,
   setUserToChatR,
+  setLastMessage,
 } from "../Store/memeSlice";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -127,8 +128,8 @@ export const AllUsers = ({
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { unreadCounts } = useSelector((state) => state.meme);
-  // const [lastMessages, setLastMessages] = useState({});
-const lastMessages = useSelector((state) => state.meme.lastMessages);
+  const lastMessages = useSelector((state) => state.meme.lastMessages);
+  const fetchedUserIdsRef = useRef(new Set());
 
   const handleUserClick = (userId) => {
     setUsertoChat(userId);
@@ -136,17 +137,7 @@ const lastMessages = useSelector((state) => state.meme.lastMessages);
     dispatch(resetUnread(userId)); // Clear unread messages for this user
   };
 
-  // const LastMessage = async (id) => {
-  //   try {
-  //     const response = await dispatch(getLastMessage(id)).unwrap();
-  //     setLastMessages((prev) => ({
-  //       ...prev,
-  //       [id]: response.data?.message || "No message yet",
-  //     }));
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+
 const LastMessage = async (id) => {
   try {
     const response = await dispatch(getLastMessage(id)).unwrap();
@@ -165,29 +156,58 @@ const LastMessage = async (id) => {
         })
       );
     } else {
-      console.error("Failed to fetch last message:", error);
+      // console.error("Failed to fetch last message:", error);
     }
   }
 };
 
 
-  // useEffect(() => {
-  //   users.forEach((user) => {
-  //     if (user.username !== username) {
-  //       LastMessage(user._id);
-  //     }
-  //   });
-  // }, [users, username]);
+  
+// useEffect(() => {
+//   users.forEach((user) => {
+//     if (
+//       user.username !== username &&
+//       !lastMessages[user._id] 
+//     ) {
+//       LastMessage(user._id);
+//     }
+//   });
+// }, [users, username, lastMessages]);
+
 useEffect(() => {
-  users.forEach((user) => {
-    if (
-      user.username !== username &&
-      !lastMessages[user._id] 
-    ) {
-      LastMessage(user._id);
+  const fetchMessages = async () => {
+    for (const user of users) {
+      if (
+        user.username !== username &&
+        !fetchedUserIdsRef.current.has(user._id)
+      ) {
+        try {
+          const response = await dispatch(getLastMessage(user._id)).unwrap();
+          dispatch(
+            setLastMessage({
+              userId: user._id,
+              message: response?.data?.message || "No message yet",
+            })
+          );
+        } catch (error) {
+          if (error?.response?.status === 404) {
+            dispatch(
+              setLastMessage({
+                userId: user._id,
+                message: "No message yet",
+              })
+            );
+          }
+        }
+
+        fetchedUserIdsRef.current.add(user._id); // Mark as fetched
+      }
     }
-  });
-}, [users, username, lastMessages]);
+  };
+
+  fetchMessages();
+}, [users, username, dispatch]);
+
 
 
   // Sort users by:
@@ -207,19 +227,7 @@ useEffect(() => {
         unread: unreadCounts[user._id] || 0,
       }));
 
-    // return usersWithLastMsg.sort((a, b) => {
-    //   // Sort by unread count descending first
-    //   if ((b.unread || 0) !== (a.unread || 0)) {
-    //     return (b.unread || 0) - (a.unread || 0);
-    //   }
-    //   // Then by lastMsg existence (assuming newer messages come later in list)
-    //   if (b.lastMsg && !a.lastMsg) return 1;
-    //   if (a.lastMsg && !b.lastMsg) return -1;
-
-    //   // Lastly, sort by username alphabetically (fallback)
-    //   return a.username.localeCompare(b.username);
-    // });
-      return usersWithLastMsg.sort((a, b) => {
+      return usersWithLastMsg?.sort((a, b) => {
         if ((b.unread || 0) !== (a.unread || 0)) {
           return (b.unread || 0) - (a.unread || 0);
         }

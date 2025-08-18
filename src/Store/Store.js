@@ -19,5 +19,7 @@ const store = configureStore({
       serializableCheck: false, // Disable serializability check for redux-persist
     }),
 });
+
 export const persister = persistStore(store); //creating persister
+
 export default store;
