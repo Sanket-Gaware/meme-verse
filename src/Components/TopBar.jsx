@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import "../App.css";
 import { MessagesSquare, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +12,8 @@ const TopBar = ({ currentUser, users, username }) => {
   const [showAddStory, setShowAddStory] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isStoryOpen, setIsStoryOpen] = useState(false);
+  const[Response,setResponse]= useState([]);
+  const [userStories, setuserStories] = useState([]);
 
   const openStory = (user) => {
     setSelectedUser(user);
@@ -23,6 +25,31 @@ const TopBar = ({ currentUser, users, username }) => {
     setIsStoryOpen(false);
   };
 
+useEffect(() => {
+    async function fetchStories() {
+      try {
+        const BASE_URL = import.meta.env.VITE_BASE_URL;
+        const VITE_GET_ALL_STORIES = import.meta.env.VITE_GET_ALL_STORIES;
+        const response = await axios.get(`${BASE_URL}${VITE_GET_ALL_STORIES}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("Token")}`,
+            "Content-Type": "application/json",
+          },
+        });
+        setResponse(response);
+       const userStories1 = response?.data?.stories?.filter(
+            (item) => item.userId._id === user._id
+          );
+       setuserStories(userStories1);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    // if (!Response) {
+      fetchStories();
+    // }
+  }, [Response]);
   return (
     <>
       <div className="w-full bg-white sticky top-0 z-50 md:hidden">
@@ -68,15 +95,11 @@ const TopBar = ({ currentUser, users, username }) => {
             <p className="text-xs mt-1 font-medium text-gray-700">You</p>
           </div>
 
-          {/* Other Users' Stories */}
-          {users.map((user, i) => {
+         
+          {/*{users.map((user, i) => {
             if (user.username === username) return null;
             return (
-              // <div
-              //   key={i}
-              //   className="flex flex-col items-center flex-shrink-0 cursor-pointer"
-              //   onClick={() => openStory(user)}
-              // >
+            
               <div
                 key={i}
                 className="flex flex-col items-center flex-shrink-0 cursor-pointer"
@@ -96,13 +119,42 @@ const TopBar = ({ currentUser, users, username }) => {
                 </p>
               </div>
             );
+          })}*/}
+
+          {users.map((user, i) => {
+            if (user.username === username) return null;
+
+            // Check if the user has any story
+            const hasStory = userStories.some(story => story.userId._id !== user._id);
+
+            return (
+              <div
+                key={i}
+                className="flex flex-col items-center flex-shrink-0 cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  openStory(user);
+                }}
+              >
+                <img
+                  className={`h-14 w-14 rounded-full object-cover border-2 ${hasStory ? 'border-pink-500' : 'border-transparent'}`}
+                  src={user.profile}
+                  alt={user.username}
+                />
+                <p className="text-xs mt-1 font-medium text-gray-700 truncate max-w-[60px]">
+                  {user.username}
+                </p>
+              </div>
+            );
           })}
+
         </div>
       </div>
 
       {/* Show Story Modal */}
       {isStoryOpen && selectedUser && (
-        <UsersStory user={selectedUser} onClose={closeStory} />
+        <UsersStory user={selectedUser} onClose={closeStory} Response={Response} />
       )}
     </>
   );

@@ -4,14 +4,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllStories } from "../Store/memeSlice";
 import axios from 'axios';
 
-const UsersStory = ({ user, onClose }) => {
+const UsersStory = ({ user, onClose ,Response}) => {
   const [current, setCurrent] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [exit, setExit] = useState(false);
   const [stories, setStories] = useState([]);
   const [currentStory, setCurrentStory] = useState(null);
- 
+  
   const dispatch = useDispatch();
   const videoRef = useRef(null);
   const durationRef = useRef(5000);
@@ -36,20 +36,20 @@ const UsersStory = ({ user, onClose }) => {
     //   }
     // };
     const fetchStories = async () => {
-        const BASE_URL = import.meta.env.VITE_BASE_URL;
-        const VITE_GET_ALL_STORIES = import.meta.env.VITE_GET_ALL_STORIES;
+        // const BASE_URL = import.meta.env.VITE_BASE_URL;
+        // const VITE_GET_ALL_STORIES = import.meta.env.VITE_GET_ALL_STORIES;
 
-        try {
-          const response = await axios.get(`${BASE_URL}${VITE_GET_ALL_STORIES}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("Token")}`,
-              "Content-Type": "application/json",
-            },
-          });
+        // try {
+        //   const response = await axios.get(`${BASE_URL}${VITE_GET_ALL_STORIES}`, {
+        //     headers: {
+        //       Authorization: `Bearer ${localStorage.getItem("Token")}`,
+        //       "Content-Type": "application/json",
+        //     },
+        //   });
 
           // console.log(response);
 
-          const userStories = response?.data?.stories?.filter(
+          const userStories = Response?.data?.stories?.filter(
             (item) => item.userId._id === user._id
           );
 
@@ -57,10 +57,10 @@ const UsersStory = ({ user, onClose }) => {
           setCurrentStory(userStories?.[0]);
           console.log(userStories?.[0]?.mediaUrl + " <=");
 
-          return response.data;
-        } catch (error) {
-          console.error("Error fetching stories:", error);
-        }
+          return Response.data;
+        // } catch (error) {
+        //   console.error("Error fetching stories:", error);
+        // }
     };
 
 
@@ -77,7 +77,7 @@ const UsersStory = ({ user, onClose }) => {
 
   // Auto-play progress logic
   useEffect(() => {
-    if (!stories.length) return;
+    if (!stories?.length) return;
 
     const story = stories[current];
     setCurrentStory(story);
@@ -109,7 +109,7 @@ const UsersStory = ({ user, onClose }) => {
   }, [current, isPaused, stories]);
 
   const nextStory = () => {
-    if (current + 1 < stories.length) {
+    if (current + 1 < stories?.length) {
       setCurrent(current + 1);
     } else {
       setExit(true);
@@ -118,7 +118,7 @@ const UsersStory = ({ user, onClose }) => {
   };
 
   const prevStory = () => {
-    setCurrent((prev) => (prev - 1 + stories.length) % stories.length);
+    setCurrent((prev) => (prev - 1 + stories?.length) % stories?.length);
   };
 
   const handlePauseToggle = () => {
@@ -202,7 +202,7 @@ const UsersStory = ({ user, onClose }) => {
       </button>
 
       {/* Navigation */}
-      {stories.length > 1 && (
+      {stories?.length > 1 && (
         <>
           <button
             onClick={(e) => {
