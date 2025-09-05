@@ -15,7 +15,7 @@ const TopBar = ({ currentUser, users, username }) => {
   const[Response,setResponse]= useState([]);
   const [userStories, setuserStories] = useState([]);
 
-  const openStory = (user) => {
+  const openStory = (user) => { 
     setSelectedUser(user);
     setIsStoryOpen(true);
   };
