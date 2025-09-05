@@ -36,20 +36,20 @@ const UsersStory = ({ user, onClose ,Response}) => {
     //   }
     // };
     const fetchStories = async () => {
-        // const BASE_URL = import.meta.env.VITE_BASE_URL;
-        // const VITE_GET_ALL_STORIES = import.meta.env.VITE_GET_ALL_STORIES;
+        const BASE_URL = import.meta.env.VITE_BASE_URL;
+        const VITE_GET_ALL_STORIES = import.meta.env.VITE_GET_ALL_STORIES;
 
-        // try {
-        //   const response = await axios.get(`${BASE_URL}${VITE_GET_ALL_STORIES}`, {
-        //     headers: {
-        //       Authorization: `Bearer ${localStorage.getItem("Token")}`,
-        //       "Content-Type": "application/json",
-        //     },
-        //   });
+        try {
+          const response = await axios.get(`${BASE_URL}${VITE_GET_ALL_STORIES}`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("Token")}`,
+              "Content-Type": "application/json",
+            },
+          });
 
           // console.log(response);
 
-          const userStories = Response?.data?.stories?.filter(
+          const userStories = response?.data?.stories?.filter(
             (item) => item.userId._id === user._id
           );
 
@@ -57,10 +57,10 @@ const UsersStory = ({ user, onClose ,Response}) => {
           setCurrentStory(userStories?.[0]);
           console.log(userStories?.[0]?.mediaUrl + " <=");
 
-          return Response.data;
-        // } catch (error) {
-        //   console.error("Error fetching stories:", error);
-        // }
+          return response.data;
+        } catch (error) {
+          console.error("Error fetching stories:", error);
+        }
     };
 
 
@@ -152,12 +152,12 @@ const UsersStory = ({ user, onClose ,Response}) => {
         <img
           src={currentStory?.mediaUrl}
           alt="Story"
-          className="absolute inset-0 w-full h-auto object-contain md:object-cover"
+          className=" inset-0 w-full h-auto object-contain md:object-cover"
         />
       )}
 
       {/* Progress Bar */}
-      {/*<div className="absolute top-3 left-0 right-0 px-4 z-20">
+      <div className="absolute top-3 left-0 right-0 px-4 z-20">
         <div className="flex space-x-1">
           {stories?.map((_, index) => (
             <div
@@ -178,7 +178,7 @@ const UsersStory = ({ user, onClose ,Response}) => {
             </div>
           ))}
         </div>
-      </div>*/}
+      </div>
 
       {/* User Info */}
       <div className="absolute top-5 left-5 flex items-center z-20">

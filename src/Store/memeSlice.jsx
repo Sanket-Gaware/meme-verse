@@ -373,6 +373,7 @@ const memeSlice = createSlice({
       const { userId, message } = action.payload;
       state.lastMessages[userId] = message;
     },
+    
   },
   extraReducers: (builder) => {
     builder
