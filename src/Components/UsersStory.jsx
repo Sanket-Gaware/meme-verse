@@ -3,15 +3,15 @@ import { ChevronLeft, ChevronRight, CircleX } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllStories } from "../Store/memeSlice";
 import axios from 'axios';
-
-const UsersStory = ({ user, onClose ,Response}) => {
+ 
+const UsersStory = ({ user, onClose }) => {
   const [current, setCurrent] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [exit, setExit] = useState(false);
   const [stories, setStories] = useState([]);
   const [currentStory, setCurrentStory] = useState(null);
-  
+   
   const dispatch = useDispatch();
   const videoRef = useRef(null);
   const durationRef = useRef(5000);
@@ -35,21 +35,24 @@ const UsersStory = ({ user, onClose ,Response}) => {
     //     console.error("Error fetching stories:", error);
     //   }
     // };
-    const fetchStories = async () => {
-        const BASE_URL = import.meta.env.VITE_BASE_URL;
-        const VITE_GET_ALL_STORIES = import.meta.env.VITE_GET_ALL_STORIES;
+    const fetchStories = () => {
+        // const BASE_URL = import.meta.env.VITE_BASE_URL;
+        // const VITE_GET_ALL_STORIES = import.meta.env.VITE_GET_ALL_STORIES;
 
-        try {
-          const response = await axios.get(`${BASE_URL}${VITE_GET_ALL_STORIES}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("Token")}`,
-              "Content-Type": "application/json",
-            },
-          });
+        // try {
+        //   const response = await axios.get(`${BASE_URL}${VITE_GET_ALL_STORIES}`, {
+        //     headers: {
+        //       Authorization: `Bearer ${localStorage.getItem("Token")}`,
+        //       "Content-Type": "application/json",
+        //     },
+        //   });
 
           // console.log(response);
 
-          const userStories = response?.data?.stories?.filter(
+          // const userStories = response?.data?.stories?.filter(
+          //   (item) => item.userId._id === user._id
+          // );
+           const userStories = allStories?.stories?.filter(
             (item) => item.userId._id === user._id
           );
 
@@ -57,22 +60,22 @@ const UsersStory = ({ user, onClose ,Response}) => {
           setCurrentStory(userStories?.[0]);
           console.log(userStories?.[0]?.mediaUrl + " <=");
 
-          return response.data;
-        } catch (error) {
-          console.error("Error fetching stories:", error);
-        }
+          // return response.data;
+        // } catch (error) {
+        //   console.error("Error fetching stories:", error);
+        // }
     };
 
 
-    if (!allStories || !allStories?.stories) {
+    // if (!allStories || !allStories?.stories) {
       fetchStories();
-    } else {
-      const userStories = allStories?.stories?.filter(
-        (item) => item.userId._id === user._id
-      );
-      setStories(userStories);
-      setCurrentStory(userStories[current]);
-    }
+    // } else {
+    //   const userStories = allStories?.stories?.filter(
+    //     (item) => item.userId._id === user._id
+    //   );
+    //   setStories(userStories);
+    //   setCurrentStory(userStories[current]);
+    // }
   }, [dispatch, user._id]);
 
   // Auto-play progress logic

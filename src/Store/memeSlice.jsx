@@ -12,7 +12,7 @@ export const getAllStories = createAsyncThunk(
           Authorization: `Bearer ${localStorage.getItem("Token")}`,
           "Content-Type": "application/json",
         },
-      });
+      }); 
       return response.data;
     } catch (error) {
       console.log("error redux")
@@ -373,6 +373,9 @@ const memeSlice = createSlice({
       const { userId, message } = action.payload;
       state.lastMessages[userId] = message;
     },
+    setAllStories: (state, action) => {
+      state.allStories = action.payload;
+    },
     
   },
   extraReducers: (builder) => {
@@ -455,5 +458,6 @@ export const {
   incrementUnread,
   resetUnread,
   setLastMessage,
+  setAllStories,
 } = memeSlice.actions;
 export default memeSlice.reducer;

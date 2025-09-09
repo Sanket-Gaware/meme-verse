@@ -2,18 +2,23 @@ import React, { useState,useEffect } from "react";
 import "../App.css";
 import { MessagesSquare, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import UsersStory from "./UsersStory"; // Import the story modal component
+import { useSelector, useDispatch } from "react-redux";
+import UsersStory from "./UsersStory";
 import AddStory from "./AddStory";
+import axios from 'axios';
+ import { setAllStories } from "../Store/memeSlice";
 
 const TopBar = ({ currentUser, users, username }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const { unreadUserCounts } = useSelector((state) => state.meme);
   const [showAddStory, setShowAddStory] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isStoryOpen, setIsStoryOpen] = useState(false);
   const[Response,setResponse]= useState([]);
   const [userStories, setuserStories] = useState([]);
+  const allStories = useSelector((state) => state.meme.allStories);
 
   const openStory = (user) => { 
     setSelectedUser(user);
@@ -26,30 +31,47 @@ const TopBar = ({ currentUser, users, username }) => {
   };
 
 useEffect(() => {
-    async function fetchStories() {
-      try {
+    const fetchStories = async () => {
         const BASE_URL = import.meta.env.VITE_BASE_URL;
         const VITE_GET_ALL_STORIES = import.meta.env.VITE_GET_ALL_STORIES;
-        const response = await axios.get(`${BASE_URL}${VITE_GET_ALL_STORIES}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("Token")}`,
-            "Content-Type": "application/json",
-          },
-        });
-        setResponse(response);
-       const userStories1 = response?.data?.stories?.filter(
-            (item) => item.userId._id === user._id
-          );
-       setuserStories(userStories1);
-      } catch (error) {
-        console.error(error);
-      }
-    }
 
-    // if (!Response) {
+        try {
+          const response = await axios.get(`${BASE_URL}${VITE_GET_ALL_STORIES}`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("Token")}`,
+              "Content-Type": "application/json",
+            },
+          });
+
+        console.log(response.data.stories[0]);
+          console.log("inside story fun")
+          const userStories = response?.data?.stories?.filter(
+            (item) => item.userId._id !== currentUser._id
+          );
+            // console.log("-+"+{userStories});
+          dispatch(setAllStories( response?.data ));
+          // setStories(userStories);
+          // setCurrentStory(userStories?.[0]);
+          console.log(userStories?.[0]?.mediaUrl + " <=");
+
+          return response?.data;
+        } catch (error) {
+          console.error("Error fetching stories:", error);
+        }
+    };
+
+     // if (allStories == '' || !allStories?.stories || allStories == 'undefined') {
+
       fetchStories();
+    // } else {
+      const userStories = allStories?.stories?.filter(
+        (item) => item.userId._id === currentUser._id
+      );
+      // setStories(userStories);
+      // setCurrentStory(userStories[current]);
     // }
-  }, [Response]);
+  }, []);
+console.log("sto=> "+allStories);
   return (
     <>
       <div className="w-full bg-white sticky top-0 z-50 md:hidden">
@@ -88,6 +110,7 @@ useEffect(() => {
                 <AddStory
                   userId={currentUser[0]?._id}
                   onClose={() => setShowAddStory(false)}
+                  currentUser={currentUser}
                 />
               </div>
             )}
@@ -96,7 +119,7 @@ useEffect(() => {
           </div>
 
          
-          {/*{users.map((user, i) => {
+         {/* {users.map((user, i) => {
             if (user.username === username) return null;
             return (
             
@@ -121,40 +144,46 @@ useEffect(() => {
             );
           })}*/}
 
-          {users.map((user, i) => {
-            if (user.username === username) return null;
+          {users
+  .filter(user => {
+    // Check if there is any story in userStories for this user._id
+    // const userHasStory = allStories.stories.some(
+    //   item => item.userId._id === user._id
+    // );
+    const userHasStory = Array.isArray(allStories?.stories) 
+  ? allStories.stories.some(item => item.userId._id === user._id)
+  : false;
+    return userHasStory && user.username !== username;
+  })
+  .map((user, i) => (
+    <div
+      key={i}
+      className="flex flex-col items-center flex-shrink-0 cursor-pointer"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openStory(user);
+      }}
+    >
+      <img
+        className="h-14 w-14 rounded-full border-2 border-pink-500 object-cover"
+        src={user.profile}
+        alt={user.username}
+      />
+      <p className="text-xs mt-1 font-medium text-gray-700 truncate max-w-[60px]">
+        {user.username}
+      </p>
+    </div>
+  ))
+}
 
-            // Check if the user has any story
-            const hasStory = userStories.some(story => story.userId._id !== user._id);
-
-            return (
-              <div
-                key={i}
-                className="flex flex-col items-center flex-shrink-0 cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  openStory(user);
-                }}
-              >
-                <img
-                  className={`h-14 w-14 rounded-full object-cover border-2 ${hasStory ? 'border-pink-500' : 'border-transparent'}`}
-                  src={user.profile}
-                  alt={user.username}
-                />
-                <p className="text-xs mt-1 font-medium text-gray-700 truncate max-w-[60px]">
-                  {user.username}
-                </p>
-              </div>
-            );
-          })}
 
         </div>
       </div>
 
       {/* Show Story Modal */}
       {isStoryOpen && selectedUser && (
-        <UsersStory user={selectedUser} onClose={closeStory} Response={Response} />
+        <UsersStory user={selectedUser} onClose={closeStory} />
       )}
     </>
   );
