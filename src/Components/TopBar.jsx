@@ -9,7 +9,7 @@ import axios from 'axios';
  import { setAllStories } from "../Store/memeSlice";
 
 const TopBar = ({ currentUser, users, username }) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
   const dispatch = useDispatch();
 
   const { unreadUserCounts } = useSelector((state) => state.meme);
@@ -44,7 +44,7 @@ useEffect(() => {
           });
 
         console.log(response.data.stories[0]);
-          console.log("inside story fun")
+          // console.log("inside story fun")
           const userStories = response?.data?.stories?.filter(
             (item) => item.userId._id !== currentUser._id
           );
@@ -64,14 +64,14 @@ useEffect(() => {
 
       fetchStories();
     // } else {
-      const userStories = allStories?.stories?.filter(
-        (item) => item.userId._id === currentUser._id
-      );
+      // const userStories = allStories?.stories?.filter(
+      //   (item) => item.userId._id === currentUser._id
+      // );
       // setStories(userStories);
       // setCurrentStory(userStories[current]);
     // }
   }, []);
-console.log("sto=> "+allStories);
+// console.log("sto=> "+allStories);
   return (
     <>
       <div className="w-full bg-white sticky top-0 z-50 md:hidden">
