@@ -1,6 +1,27 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+export const getAllFriends = createAsyncThunk(
+  "memes/getfriends",
+  async (_, { rejectWithValue }) => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    const VITE_GET_ALL_FRIENDS = import.meta.env.VITE_GET_ALL_FRIENDS;
+    try {
+      const response = await axios.get(`${BASE_URL}${VITE_GET_ALL_FRIENDS}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("Token")}`,
+          "Content-Type": "application/json",
+        },
+      });
+      // return response.data;
+      console.log(response);
+    } catch (error) {
+      console.log("error redux");
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
 export const getAllStories = createAsyncThunk(
   "memes/getstories",
   async (_, { rejectWithValue }) => {
@@ -12,10 +33,10 @@ export const getAllStories = createAsyncThunk(
           Authorization: `Bearer ${localStorage.getItem("Token")}`,
           "Content-Type": "application/json",
         },
-      }); 
+      });
       return response.data;
     } catch (error) {
-      console.log("error redux")
+      console.log("error redux");
       return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
@@ -45,14 +66,15 @@ export const saveStoryToDB = createAsyncThunk(
 
       const res = await axios.post(
         `${BASE_URL}api/memes/addstory/${uploadedBy}`,
-        storyData
-        , {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("Token")}`,
-          "Content-Type": "application/json",
-        },
-      });
-      
+        storyData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("Token")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
       return res;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -79,6 +101,7 @@ export const sendOtp = createAsyncThunk(
     }
   }
 );
+
 export const getLastMessage = createAsyncThunk(
   "auth/lastMessage",
   async (id, { rejectWithValue }) => {
@@ -308,6 +331,7 @@ const memeSlice = createSlice({
   initialState: {
     memes: [],
     users: [],
+    friends: [],
     userToChat: "",
     unreadUserCounts: [],
     unreadCounts: {},
@@ -376,7 +400,9 @@ const memeSlice = createSlice({
     setAllStories: (state, action) => {
       state.allStories = action.payload;
     },
-    
+    setAllFriends: (state, action) => {
+      state.friends = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -448,6 +474,7 @@ const memeSlice = createSlice({
       });
   },
 });
+
 export const {
   likeMeme,
   addComment,
@@ -459,5 +486,7 @@ export const {
   resetUnread,
   setLastMessage,
   setAllStories,
+  setAllFriends,
 } = memeSlice.actions;
+
 export default memeSlice.reducer;

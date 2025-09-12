@@ -107,16 +107,18 @@
 //   );
 // };
 
-import { useState, useEffect, useMemo,useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   getLastMessage,
   resetUnread,
   setUserToChatR,
   setLastMessage,
+  getAllFriends,
 } from "../Store/memeSlice";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { setAllFriends } from "../Store/memeSlice";
 
 export const AllUsers = ({
   currentUser,
@@ -130,6 +132,7 @@ export const AllUsers = ({
   const { unreadCounts } = useSelector((state) => state.meme);
   const lastMessages = useSelector((state) => state.meme.lastMessages);
   const fetchedUserIdsRef = useRef(new Set());
+  // const friends = useSelector((state) => state.memes.friends);
 
   const handleUserClick = (userId) => {
     setUsertoChat(userId);
@@ -137,78 +140,87 @@ export const AllUsers = ({
     dispatch(resetUnread(userId)); // Clear unread messages for this user
   };
 
- 
-const LastMessage = async (id) => {
-  try {
-    const response = await dispatch(getLastMessage(id)).unwrap();
-    dispatch(
-      setLastMessage({
-        userId: id,
-        message: response.data?.message || "No message yet",
-      })
-    );
-  } catch (error) {
-    if (error?.response?.status === 404) {
+  useEffect(() => {
+    const fetchFriends = async () => {
+      try {
+        const response = await dispatch(getAllFriends()).unwrap();
+        // console.log("friends=>" + response.map((item) => item));
+        dispatch(
+          setAllFriends({
+            message: response?.data?.message || "No message yet",
+          })
+        );
+      } catch (error) {
+        if (error?.response?.status === 404) {
+          dispatch(
+            setAllFriends({
+              message: "No message yet",
+            })
+          );
+        }
+      }
+    };
+    // if (!friends || friends?.length === 0) {
+    fetchFriends();
+    // }
+  }, [dispatch]);
+
+  const LastMessage = async (id) => {
+    try {
+      const response = await dispatch(getLastMessage(id)).unwrap();
       dispatch(
         setLastMessage({
           userId: id,
-          message: "No message yet",
+          message: response.data?.message || "No message yet",
         })
       );
-    } else {
-      // console.error("Failed to fetch last message:", error);
-    }
-  }
-};
-
-
-  
-// useEffect(() => {
-//   users.forEach((user) => {
-//     if (
-//       user.username !== username &&
-//       !lastMessages[user._id] 
-//     ) {
-//       LastMessage(user._id);
-//     }
-//   });
-// }, [users, username, lastMessages]);
-
-useEffect(() => {
-  const fetchMessages = async () => {
-    for (const user of users) {
-      if (
-        user.username !== username &&
-        !fetchedUserIdsRef.current.has(user._id)
-      ) {
-        try {
-          const response = await dispatch(getLastMessage(user._id)).unwrap();
-          dispatch(
-            setLastMessage({
-              userId: user._id,
-              message: response?.data?.message || "No message yet",
-            })
-          );
-        } catch (error) {
-          if (error?.response?.status === 404) {
-            dispatch(
-              setLastMessage({
-                userId: user._id,
-                message: "No message yet",
-              })
-            );
-          }
-        }
-
-        fetchedUserIdsRef.current.add(user._id); // Mark as fetched
+    } catch (error) {
+      if (error?.response?.status === 404) {
+        dispatch(
+          setLastMessage({
+            userId: id,
+            message: "No message yet",
+          })
+        );
+      } else {
+        // console.error("Failed to fetch last message:", error);
       }
     }
   };
 
-  fetchMessages();
-}, [users, username, dispatch]);
+  useEffect(() => {
+    const fetchMessages = async () => {
+      for (const user of users) {
+        if (
+          user.username !== username &&
+          !fetchedUserIdsRef.current.has(user._id)
+        ) {
+          try {
+            const response = await dispatch(getLastMessage(user._id)).unwrap();
+            dispatch(
+              setLastMessage({
+                userId: user._id,
+                message: response?.data?.message || "No message yet",
+              })
+            );
+          } catch (error) {
+            if (error?.response?.status === 404) {
+              dispatch(
+                setLastMessage({
+                  userId: user._id,
+                  message: "No message yet",
+                })
+              );
+            }
+          }
 
+          fetchedUserIdsRef.current.add(user._id); // Mark as fetched
+        }
+      }
+    };
 
+    fetchMessages();
+  }, [users, username, dispatch]);
 
   // Sort users by:
   // 1. Has unread messages? Those go first
@@ -218,6 +230,7 @@ useEffect(() => {
   // For now, we just sort by unread count and fallback to username alphabetically.
 
   // Create a sorted users array using useMemo for performance
+
   const sortedUsers = useMemo(() => {
     const usersWithLastMsg = users
       .filter((user) => user.username !== username)
@@ -227,18 +240,17 @@ useEffect(() => {
         unread: unreadCounts[user._id] || 0,
       }));
 
-      return usersWithLastMsg?.sort((a, b) => {
-        if ((b.unread || 0) !== (a.unread || 0)) {
-          return (b.unread || 0) - (a.unread || 0);
-        }
+    return usersWithLastMsg?.sort((a, b) => {
+      if ((b.unread || 0) !== (a.unread || 0)) {
+        return (b.unread || 0) - (a.unread || 0);
+      }
 
-        if (b.lastMsg && !a.lastMsg) return 1;
-        if (a.lastMsg && !b.lastMsg) return -1;
+      if (b.lastMsg && !a.lastMsg) return 1;
+      if (a.lastMsg && !b.lastMsg) return -1;
 
-        // Safely compare usernames
-        return (a?.username ?? "").localeCompare(b?.username ?? "");
-      });
-
+      // Safely compare usernames
+      return (a?.username ?? "").localeCompare(b?.username ?? "");
+    });
   }, [users, username, lastMessages, unreadCounts]);
 
   return (
@@ -264,7 +276,7 @@ useEffect(() => {
       </div>
       <div className="border-b border-gray-200 mx-5" />
       <div className="px-5 mt-3">
-        <p className="font-bold text-gray-500 tracking-wide mb-3">Friends</p>
+        <p className="font-bold text-gray-500 tracking-wide mb-3">Users</p>
         {sortedUsers.map((user) => (
           <div
             key={user._id}
