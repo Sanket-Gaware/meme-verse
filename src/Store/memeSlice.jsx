@@ -1,6 +1,103 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+export const sendFriendReq = createAsyncThunk(
+  "memes/sendfriendreq",
+  async (ReciverId, { rejectWithValue }) => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    const VITE_POST_ACCEPT_REJECT_REQ = import.meta.env
+      .VITE_POST_ACCEPT_REJECT_REQ;
+      const token = localStorage.getItem("Token");
+    try {
+      const response = await axios.post(
+        `${BASE_URL}${VITE_POST_ACCEPT_REJECT_REQ}/${ReciverId}/send-request`,
+        
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      ); 
+      return response.data;
+    } catch (error) {
+      console.log("error redux");
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+export const rejectFriendReq = createAsyncThunk(
+  "memes/acceptfriendreq",
+  async (ReciverId, { rejectWithValue }) => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    const VITE_POST_REJECT_REQ = import.meta.env.VITE_POST_ACCEPT_REJECT_REQ;
+    try {
+      const response = await axios.post(
+        `${BASE_URL}${VITE_POST_REJECT_REQ}/${ReciverId}/reject-request`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("Token")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      // console.log("error redux");
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+export const acceptFriendReq = createAsyncThunk(
+  "memes/acceptfriendreq",
+  async (ReciverId, { rejectWithValue }) => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    const VITE_POST_ACCEPT_REQ = import.meta.env.VITE_POST_ACCEPT_REJECT_REQ;
+    console.log(localStorage.getItem("Token"));
+
+    try {
+      const response = await axios.post(
+        `${BASE_URL}${VITE_POST_ACCEPT_REQ}/${ReciverId}/accept-request`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("Token")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      // console.log("error redux");
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+export const getAllFriendReqs = createAsyncThunk(
+  "memes/getfriendreqs",
+  async (_, { rejectWithValue }) => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    const VITE_GET_ALL_FRIEND_REQ = import.meta.env.VITE_GET_ALL_FRIEND_REQ;
+    try {
+      const response = await axios.get(
+        `${BASE_URL}${VITE_GET_ALL_FRIEND_REQ}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("Token")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      // console.log("error redux");
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
 export const getAllFriends = createAsyncThunk(
   "memes/getfriends",
   async (_, { rejectWithValue }) => {
@@ -13,10 +110,9 @@ export const getAllFriends = createAsyncThunk(
           "Content-Type": "application/json",
         },
       });
-      // return response.data;
-      console.log(response);
+      return response.data;
     } catch (error) {
-      console.log("error redux");
+      // console.log("error redux");
       return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
@@ -332,6 +428,7 @@ const memeSlice = createSlice({
     memes: [],
     users: [],
     friends: [],
+    friendReq: [],
     userToChat: "",
     unreadUserCounts: [],
     unreadCounts: {},
@@ -402,6 +499,9 @@ const memeSlice = createSlice({
     },
     setAllFriends: (state, action) => {
       state.friends = action.payload;
+    },
+    setAllFriendReq: (state, action) => {
+      state.friendReq = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -487,6 +587,7 @@ export const {
   setLastMessage,
   setAllStories,
   setAllFriends,
+  setAllFriendReq,
 } = memeSlice.actions;
 
 export default memeSlice.reducer;

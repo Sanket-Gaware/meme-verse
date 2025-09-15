@@ -44,7 +44,10 @@ const Login = () => {
     try {
       const response = await dispatch(login(credentials)).unwrap();
       if (response.status === 200) {
-        toast.success("Login successful!", { autoClose: 1000 });
+        toast.success("Login successful!", {
+          autoClose: 300,
+          closeButton: true,
+        });
         localStorage.setItem("Token", response.data.token);
         values.email === localStorage.getItem("username")
           ? navigate(`${localStorage.getItem("LastVisitedPath")}`)
@@ -53,7 +56,7 @@ const Login = () => {
     } catch (error) {
       if (error.response) {
         setErrorMessage(error.response.data.message || "Login failed!");
-        toast.error(error.response.data.message, { autoClose: 3000 });
+        toast.error(error.response.data.message, { autoClose: 300 });
       }
     }
   };

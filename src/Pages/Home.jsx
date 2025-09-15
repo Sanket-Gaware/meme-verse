@@ -6,6 +6,8 @@ import TopBar from "../Components/TopBar";
 import { AllUsers } from "../Components/AllUsers";
 import { useRef } from "react";
 import { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 const Loader = React.lazy(() => import("../Components/Loader"));
 
 function Home() {
@@ -15,6 +17,7 @@ function Home() {
     useSelector((state) => state.meme);
   const [newMemes, setNewMemes] = useState(memes);
   const { hasFetchedAllMemes } = useSelector((state) => state.meme);
+  const navigate = useNavigate();
 
   // const handleUserMemes = async () => {
   //   try {
@@ -86,34 +89,47 @@ function Home() {
   //   }
   // }, [dispatch, memes, allUsersMemes, processUserMemes]);
 
-const init = useCallback(async () => {
-  if (hasFetched.current) return;
-  hasFetched.current = true;
+  const init = useCallback(async () => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
 
-  try {
-    await dispatch(fetchMemes()).unwrap();
-    await dispatch(fetchUsers()).unwrap();
+    try {
+      await dispatch(fetchMemes()).unwrap();
+      await dispatch(fetchUsers()).unwrap();
 
-    if (!hasFetchedAllMemes) {
-      const response = await dispatch(getAllMemes()).unwrap();
-      const userMemes = processUserMemes(response.data);
-      setNewMemes(memes.concat(userMemes));
-    } else {
-      const userMemes = processUserMemes(allUsersMemes.data);
-      setNewMemes(memes.concat(userMemes));
+      if (!hasFetchedAllMemes) {
+        const response = await dispatch(getAllMemes()).unwrap();
+        const userMemes = processUserMemes(response.data);
+        setNewMemes(memes.concat(userMemes));
+      } else {
+        const userMemes = processUserMemes(allUsersMemes.data);
+        setNewMemes(memes.concat(userMemes));
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
     }
-  } catch (error) {
-    console.error("Fetch error:", error);
-  }
-}, [dispatch, memes, allUsersMemes, hasFetchedAllMemes, processUserMemes]);
-
+  }, [dispatch, memes, allUsersMemes, hasFetchedAllMemes, processUserMemes]);
 
   // Single effect that runs the init function once
   useEffect(() => {
     init();
   }, [init]);
 
-  if (loading) return <Loader />;
+  useEffect(() => {
+    error
+      ? setTimeout(() => {
+          localStorage.removeItem("Token");
+          toast("Request Time out", {
+            autoClose: 300,
+            closeButton: true,
+            hideProgressBar: true,
+          });
+          navigate("/");
+        }, 300)
+      : "";
+  }, [error]);
+
+  if (loading) return <>{newMemes == "" ? <Loader /> : " "}</>;
   if (error)
     return (
       <p className="flex items-center my-auto justify-center text-red-400">
@@ -134,7 +150,7 @@ const init = useCallback(async () => {
           users={users}
         />
       </div>
-      <div className="col-span-4 col border-l-1 border-gray-300 top-0 hidden md:block">
+      <div className="col-span-4 border-l-1 border-gray-300 top-0 hidden md:block">
         <div className="fixed">
           <AllUsers
             currentUser={currentUser}

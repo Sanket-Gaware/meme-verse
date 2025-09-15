@@ -6,7 +6,7 @@
 //   setUserToChatR,
 // } from "../Store/memeSlice";
 // import { ArrowLeft, CheckCheck } from "lucide-react";
-
+ 
 // export const AllUsers = ({
 //   currentUser,
 //   users,
@@ -107,7 +107,7 @@
 //   );
 // };
 
-import { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   getLastMessage,
@@ -115,10 +115,16 @@ import {
   setUserToChatR,
   setLastMessage,
   getAllFriends,
+  getAllFriendReqs,
+  acceptFriendReq,
+  rejectFriendReq,
+  sendFriendReq,
 } from "../Store/memeSlice";
 import { ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { setAllFriends } from "../Store/memeSlice";
+import { useLocation, useNavigate } from "react-router-dom";
+import { setAllFriends, setAllFriendReq } from "../Store/memeSlice";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 export const AllUsers = ({
   currentUser,
@@ -132,37 +138,104 @@ export const AllUsers = ({
   const { unreadCounts } = useSelector((state) => state.meme);
   const lastMessages = useSelector((state) => state.meme.lastMessages);
   const fetchedUserIdsRef = useRef(new Set());
-  // const friends = useSelector((state) => state.memes.friends);
-
+  const friends = useSelector((state) => state.meme.friends);
+  const friendReq = useSelector((state) => state.meme.friendReq);
+  const location = useLocation();
+  const path = location.pathname;
+  // console.log(currentUser[0]._id);
   const handleUserClick = (userId) => {
     setUsertoChat(userId);
     dispatch(setUserToChatR(userId));
     dispatch(resetUnread(userId)); // Clear unread messages for this user
   };
 
-  useEffect(() => {
-    const fetchFriends = async () => {
-      try {
-        const response = await dispatch(getAllFriends()).unwrap();
-        // console.log("friends=>" + response.map((item) => item));
-        dispatch(
-          setAllFriends({
-            message: response?.data?.message || "No message yet",
-          })
-        );
-      } catch (error) {
-        if (error?.response?.status === 404) {
-          dispatch(
-            setAllFriends({
-              message: "No message yet",
-            })
-          );
+  const sendRquest = async (ReciverId) => {
+    // console.log(ReciverId);
+    // try {
+    //   const response = await dispatch(sendFriendReq(ReciverId)).unwrap();
+    //   console.log("friends req send =>" + response);
+    //   response.status === 200
+    //     ? toast.success("Request Send", { autoClose: 300 })
+    //     : toast.error("something went wrong ", { autoClose: 300 });
+    // } catch (error) {
+    //   if (error?.response?.status === 404) {
+    //     return error;
+    //   }
+    // }
+    try {
+      const response = await axios.post(
+        `https://node-js-view-point.onrender.com/api/auth/${ReciverId}/send-request`,
+        
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("Token")}`,
+            "Content-Type": "application/json",
+          },
         }
+      ); 
+      return response.data;
+    } catch (error) {
+      console.log("error"+error.response.data.message);
+    }  
+  };
+  const rejectRquest = async (id) => {
+    try {
+      const response = await dispatch(rejectFriendReq(id)).unwrap();
+      // console.log("friends req=>" + response);
+      response.status === 200
+        ? toast.success("Request Rejected", { autoClose: 300 })
+        : toast.error("something went wrong ", { autoClose: 300 });
+    } catch (error) {
+      if (error?.response?.status === 404) {
+        return error;
       }
-    };
+    }
+  };
+
+  const acceptRquest = async (id) => {
+    console.log("friends req accept=>" + id);
+
+    try {
+      const response = await dispatch(acceptFriendReq(id)).unwrap();
+      // console.log("friends req=>" + id);
+      response.status === 200
+        ? toast.success("Request Accepted", { autoClose: 300 })
+        : toast.error("something went wrong ", { autoClose: 300 });
+    } catch (error) {
+      if (error?.response?.status === 404) {
+        return error;
+      }
+    }
+  };
+
+  const fetchFriendReq = async () => {
+    try {
+      const response = await dispatch(getAllFriendReqs()).unwrap();
+      // console.log("friends req=>" + response.map((item) => item.fullname));
+      dispatch(setAllFriendReq(response || []));
+    } catch (error) {
+      if (error?.response?.status === 404) {
+        dispatch(setAllFriendReq(error.response || []));
+      }
+    }
+  };
+
+  const fetchFriends = async () => {
+    try {
+      const response = await dispatch(getAllFriends()).unwrap();
+      // console.log("friends=>" + response.map((item) => item._id));
+      dispatch(setAllFriends(response || []));
+    } catch (error) {
+      if (error?.response?.status === 404) {
+        dispatch(setAllFriends(error.response || []));
+      }
+    }
+  };
+  useEffect(() => {
     // if (!friends || friends?.length === 0) {
     fetchFriends();
     // }
+    fetchFriendReq();
   }, [dispatch]);
 
   const LastMessage = async (id) => {
@@ -219,8 +292,8 @@ export const AllUsers = ({
       }
     };
 
-    fetchMessages();
-  }, [users, username, dispatch]);
+    // fetchMessages();
+  }, [dispatch]);
 
   // Sort users by:
   // 1. Has unread messages? Those go first
@@ -230,10 +303,34 @@ export const AllUsers = ({
   // For now, we just sort by unread count and fallback to username alphabetically.
 
   // Create a sorted users array using useMemo for performance
+  const usersWithoutfriends = users.filter((user) => {
+    // 1. Skip if it's the current user
+    if (user.username === username) return false;
+
+    // 2. Skip if the user is in the friends list
+    const isFriend = friends?.some(
+      (friend) => friend.username === user.username
+    );
+
+    // 3. Skip if the user has already received a friend request
+    const isRequested = friendReq?.some(
+      (req) => req.username === user.username
+    );
+
+    return !isFriend && !isRequested;
+  });
 
   const sortedUsers = useMemo(() => {
+    // console.log(friends);
     const usersWithLastMsg = users
-      .filter((user) => user.username !== username)
+      .filter(
+        (user) =>
+          user.username !== username &&
+          user.username !==
+            (friends == ""
+              ? friends?.map((data) => data.username)
+              : fetchFriends())
+      )
       .map((user) => ({
         ...user,
         lastMsg: lastMessages[user._id] || "",
@@ -255,7 +352,7 @@ export const AllUsers = ({
 
   return (
     <div className="md:mb-0 mb-5">
-      <div className="flex gap-3 items-center my-5 px-5">
+      <div className="flex gap-3 items-center my-2 px-5">
         <button
           className="cursor-pointer md:hidden"
           onClick={() => navigate("/home")}
@@ -274,40 +371,150 @@ export const AllUsers = ({
           <p className="text-sm text-gray-500">{currentUser[0]?.username}</p>
         </div>
       </div>
-      <div className="border-b border-gray-200 mx-5" />
-      <div className="px-5 mt-3">
-        <p className="font-bold text-gray-500 tracking-wide mb-3">Users</p>
-        {sortedUsers.map((user) => (
-          <div
-            key={user._id}
-            className="flex justify-between items-center my-3 cursor-pointer"
-            onClick={() => handleUserClick(user._id)}
-          >
-            <div className="flex gap-3 items-center">
-              <img
-                className="h-12 w-12 rounded-full aspect-square"
-                src={user.profile}
-                alt="friend"
-              />
-              <div>
-                <p className="text-sm tracking-wider font-semibold">
-                  {user.fullname}
-                </p>
-                <p className="text-sm text-gray-500 dark:text-red-500">
-                  {home === true
-                    ? user.username
-                    : user.lastMsg || "No message yet"}
-                </p>
-              </div>
-            </div>
+      <div className="border-b border-gray-200 mx-1" />
 
-            {user.unread > 0 && (
-              <span className="bg-sky-500 text-white text-xs px-2 py-1 rounded-full">
-                {user.unread}
-              </span>
-            )}
+      {friends !== "" && friends?.length > 0 ? (
+        <div>
+          <div className="border-b border-gray-200 mx-1" />
+          <p className="font-bold text-gray-500 tracking-wide pt-1 flex items-center px-5">
+            Friends
+          </p>
+          <div className="px-5 mt-1 h-auto max-h-70 overflow-y-auro z-10">
+            {friends?.map((user) => (
+              <div
+                key={user._id}
+                className="flex justify-between items-center my-3 cursor-pointer "
+                onClick={() => handleUserClick(user._id)}
+              >
+                <div className="flex gap-3 items-center">
+                  <img
+                    className="h-12 w-12 rounded-full aspect-square"
+                    src={user.profile}
+                    alt="friend"
+                  />
+                  <div>
+                    <p className="text-sm tracking-wider font-semibold">
+                      {user.fullname}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-red-500">
+                      {home === true
+                        ? user.username
+                        : user.lastMsg || "No message yet"}
+                    </p>
+                  </div>
+                </div>
+
+                {user.unread > 0 && (
+                  <span className="bg-sky-500 text-white text-xs px-2 py-1 rounded-full">
+                    {user.unread}
+                  </span>
+                )}
+              </div>
+            ))}
           </div>
-        ))}
+          {friendReq !== "" && friendReq?.length > 0 ? (
+            <div className="px-5 mt-1 h-auto max-h-70 overflow-y-auro z-10">
+              {friendReq?.map((user) => (
+                <>
+                  <div
+                    key={user._id}
+                    className="flex justify-between items-center mt-3 cursor-pointer "
+                    // onClick={() => handleUserClick(user._id)}
+                  >
+                    <div className="flex gap-3 items-center">
+                      <img
+                        className="h-12 w-12 rounded-full aspect-square"
+                        src={user.profile}
+                        alt="friend"
+                      />
+                      <div>
+                        <p className="text-sm tracking-wider font-semibold">
+                          {user.fullname}
+                        </p>
+                        <p className="text-sm text-gray-500 dark:text-red-500 truncate">
+                          {home === true
+                            ? user.username
+                            : user.lastMsg || "No message yet"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex justify-center gap-3 items-center w-full">
+                    <button
+                      onClick={() => acceptRquest(user._id)}
+                      className="px-3 py-1 text-xs  cursor-pointer rounded-full border border-sky-500 text-sky-500 hover:bg-sky-500 hover:text-white transition duration-300 shadow-sm flex-shrink-0 me-2"
+                    >
+                      Accept
+                    </button>
+                    <button
+                      onClick={() => rejectRquest(user._id)}
+                      className=" px-3 py-1 text-xs  cursor-pointer rounded-full border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition duration-300 shadow-sm flex-shrink-0 me-2"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                </>
+              ))}
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
+      ) : (
+        ""
+      )}
+
+      <p className="font-bold text-gray-500 tracking-wide pt-1 flex items-center px-5">
+        Users
+      </p>
+      <div className="px-2 mt-1 h-75 overflow-y-auto no-scrollbar">
+        {(path == "/messages" ? sortedUsers : usersWithoutfriends)?.map(
+          (user) => (
+            <div
+              key={user._id}
+              className="flex justify-between items-center my-3 cursor-pointer "
+              // onClick={() => handleUserClick(user._id)}
+            >
+              <div className="flex justify-between items-center w-full">
+                {/* Left side: Profile info */}
+                <div className="flex gap-2 items-center min-w-0">
+                  <img
+                    className="h-12 w-12 rounded-full aspect-square flex-shrink-0"
+                    src={user.profile}
+                    alt="user"
+                  />
+                  <div className="min-w-0 ">
+                    <p className="text-sm tracking-wider font-semibold truncate">
+                      {user.fullname}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-red-500 truncate">
+                      {home === true
+                        ? user.username
+                        : user.lastMsg || "No message yet"}
+                    </p>
+                  </div>
+                </div>
+                {/* Right side: Add Friend button */}
+                {/* {home === true ? ( */}
+                <button
+                  onClick={() => sendRquest(user._id)}
+                  className="ml-1 px-3 py-1 text-xs  cursor-pointer rounded-full border border-sky-500 text-sky-500 hover:bg-sky-500 hover:text-white transition duration-300 shadow-sm flex-shrink-0 me-2"
+                >
+                  Add +
+                </button>
+                {/* ) : (
+                ""
+              )} */}
+              </div>
+
+              {user.unread > 0 && (
+                <span className="bg-sky-500 text-white text-xs px-2 py-1 rounded-full">
+                  {user.unread}
+                </span>
+              )}
+            </div>
+          )
+        )}
       </div>
     </div>
   );
