@@ -8,6 +8,7 @@ export const sendFriendReq = createAsyncThunk(
     const VITE_POST_ACCEPT_REJECT_REQ = import.meta.env
       .VITE_POST_ACCEPT_REJECT_REQ;
       const token = localStorage.getItem("Token");
+      console.log( `=>Bearer ${token}`);
     try {
       const response = await axios.post(
         `${BASE_URL}${VITE_POST_ACCEPT_REJECT_REQ}/${ReciverId}/send-request`,

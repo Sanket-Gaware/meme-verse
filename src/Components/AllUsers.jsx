@@ -10,7 +10,7 @@
 // export const AllUsers = ({
 //   currentUser,
 //   users,
-//   username,
+//   username, 
 //   setUsertoChat,
 //   home,
 // }) => {
@@ -163,12 +163,15 @@ export const AllUsers = ({
     //   }
     // }
     try {
+      
+       const token = localStorage.getItem("Token");
+       console.log( `=>Bearer ${token}`);
       const response = await axios.post(
         `https://node-js-view-point.onrender.com/api/auth/${ReciverId}/send-request`,
         
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("Token")}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }

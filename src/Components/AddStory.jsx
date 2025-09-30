@@ -10,7 +10,7 @@
 //   const [preview, setPreview] = useState(null);
 //   const [loading, setLoading] = useState(false);
 
-//   const fileInputRef = useRef();
+//   const fileInputRef = useRef(); 
 
 //   // Automatically open file selector on mount
 //   useEffect(() => {
@@ -124,6 +124,7 @@ import React, { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { postStoryImage, saveStoryToDB } from "../Store/memeSlice";
+import imageCompression from 'browser-image-compression';
 
 const AddStory = ({ userId, currentUser }) => {
   const dispatch = useDispatch();
@@ -132,6 +133,8 @@ const AddStory = ({ userId, currentUser }) => {
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+const [isProcessing, setIsProcessing] = useState(false);
+const Loader = React.lazy(() => import("../Components/Loader"));
 
   const fileInputRef = useRef();
 
@@ -139,14 +142,70 @@ const AddStory = ({ userId, currentUser }) => {
     fileInputRef.current.click();
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setMedia(file);
-      setPreview(URL.createObjectURL(file));
-      setShowModal(true);
-    }
-  };
+  // const handleFileChange = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     setMedia(file);
+  //     setPreview(URL.createObjectURL(file));
+  //     setShowModal(true);
+  //   }
+  // };
+
+const handleFileChange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  setIsProcessing(true);   // Start loader
+  setShowModal(true);      // Show modal immediately
+
+  try {
+    const options = {
+      maxSizeMB: 0.08,
+      maxWidthOrHeight: 1024,
+      useWebWorker: true,
+    };
+    const compressedFile = await imageCompression(file, options);
+    const dataUrl = await imageCompression.getDataUrlFromFile(compressedFile);
+    const webpFile = await convertToWebP(dataUrl, file.name);
+
+    setPreview(URL.createObjectURL(webpFile));
+    setMedia(webpFile);
+  } catch (err) {
+    console.error("Image compression/conversion failed:", err);
+    toast.error("Failed to process image.");
+    setShowModal(false); // Close modal if error
+  } finally {
+    setIsProcessing(false); // Stop loader
+  }
+};
+
+
+// 🔧 Helper: Convert Data URL to WebP File
+const convertToWebP = (dataUrl, originalFileName) => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+
+      canvas.toBlob(
+        (blob) => {
+          const webpFile = new File([blob], originalFileName.replace(/\.\w+$/, '.webp'), {
+            type: 'image/webp',
+          });
+          resolve(webpFile);
+        },
+        'image/webp',
+        0.8 // quality (0–1)
+      );
+    };
+    img.src = dataUrl;
+  });
+};
+
 
   const handleUploadStory = async () => {
     if (!media) {
@@ -192,108 +251,118 @@ const AddStory = ({ userId, currentUser }) => {
     setPreview(null);
   };
 
-  return (
-    <>
-      {/* Hidden File Input */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*,video/*"
-        onChange={handleFileChange}
-        className="hidden"
-      />
+ return (
+  <>
+    {/* Hidden File Input */}
+    <input
+      ref={fileInputRef}
+      type="file"
+      accept="image/*,video/*"
+      onChange={handleFileChange}
+      className="hidden"
+    />
 
-      {/* Add Story Button */}
-            <div className="flex flex-col justify-between h-full min-h-screen px-4 py-6">
-              <div className="flex items-start gap-3">
-                <img
-                  src={currentUser[0]?.profile}
-                  alt="Profile"
-                  className="w-12 h-12 rounded-full border-2 border-white object-cover"
-                />
-                <div className="flex flex-col">
-                  <span className="text-dark font-semibold"> 
-                    {currentUser[0]?.fullname || "You"}
-                  </span>
-                  <span className="text-sm text-gray-300">Your Story</span>
-                </div>
-                <button
-                onClick={handleCloseModal}
-                className="text-dark text-3xl font-bold"
-                aria-label="Close"
-              >
-                &times;
-              </button>
-              </div>
-
-              {/* Bottom Section: Add Story Button */}
-              <button
-                onClick={handleOpenFile}
-                className="bg-gradient-to-tr from-pink-500 to-yellow-500 text-white py-2 px-4 rounded-full font-semibold hover:scale-105 transition"
-              >
-                + Add to Story
-              </button>
-            </div>
-
-      {/* Preview Modal */}
-      {showModal && preview && (
-        <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
-          <div className="relative w-full h-full">
-
-            {/* Render Image or Video */}
-            {media.type.startsWith("video") ? (
-              <video
-                src={preview}
-                controls
-                className="w-full h-full absolute inset-0 object-contain bg-black"
-              />
-            ) : (
-              <img
-                src={preview}
-                alt="Preview"
-                className="w-full h-full absolute inset-0 object-contain bg-black"
-              />
-            )}
-
-            {/* Top Bar with User Info */}
-            <div className="absolute top-0 left-0 w-full p-4 flex items-center justify-between bg-gradient-to-b from-black/60 to-transparent z-10">
-              <div className="flex items-center gap-3">
-                <img
-                  src={currentUser[0]?.profile}
-                  alt="Profile"
-                  className="w-10 h-10 rounded-full border-2 border-white object-cover"
-                />
-                <div className="flex flex-col">
-                  <span className="text-white font-semibold">
-                    {currentUser[0]?.username || "You"}
-                  </span>
-                  <span className="text-sm text-gray-300">Your Story</span>
-                </div>
-              </div>
-              <button
-                onClick={handleCloseModal}
-                className="text-white text-3xl font-bold"
-                aria-label="Close"
-              >
-                &times;
-              </button>
-            </div>
-
-            {/* Bottom Upload Button */}
-            <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/60 to-transparent z-10">
-              <button
-                onClick={handleUploadStory}
-                disabled={loading}
-                className="w-full bg-pink-500 text-white py-3 rounded-md font-semibold text-lg hover:bg-pink-600"
-              >
-                {loading ? "Adding..." : "Add to Story"}
-              </button>
-            </div>
+    {/* ======= Story UI: Only show when modal is NOT open ======= */}
+    {!showModal && (
+      <div className="flex flex-col justify-between h-full min-h-screen px-4 py-6">
+        <div className="flex items-start gap-3">
+          <img
+            src={currentUser[0]?.profile}
+            alt="Profile"
+            className="w-12 h-12 rounded-full border-2 border-white object-cover"
+          />
+          <div className="flex flex-col">
+            <span className="text-dark font-semibold">
+              {currentUser[0]?.fullname || "You"}
+            </span>
+            <span className="text-sm text-gray-300">Your Story</span>
           </div>
+          {/* 🚫 Remove this close button from here */}
+        </div>
+
+        {/* Add Story Button */}
+        <button
+          onClick={handleOpenFile}
+          className="bg-gradient-to-tr from-pink-500 to-yellow-500 text-white py-2 px-4 rounded-full font-semibold hover:scale-105 transition"
+        >
+          + Add to Story
+        </button>
+      </div>
+    )}
+
+    {/* ======= Modal UI: Show when modal is active ======= */}
+    {showModal && (
+  <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
+    <div className="relative w-full h-full">
+
+      {/* Show loader during processing */}
+      {isProcessing ? (
+        <div className="w-full h-full flex items-center justify-center bg-black">
+          <Loader />
+        </div>
+      ) : preview && media ? (
+        media.type.startsWith("video") ? (
+          <video
+            src={preview}
+            controls
+            className="w-full h-full absolute inset-0 object-contain bg-black"
+          />
+        ) : (
+          <img
+            src={preview}
+            alt="Preview"
+            className="w-full h-full absolute inset-0 object-contain bg-black"
+          />
+        )
+      ) : (
+        <div className="w-full h-full flex items-center justify-center bg-black text-white text-lg">
+          No media selected
         </div>
       )}
-    </>
-  );
+
+      {/* Top Bar with Close */}
+      <div className="absolute top-0 left-0 w-full p-4 flex items-center justify-between bg-gradient-to-b from-black/60 to-transparent z-10">
+        <div className="flex items-center gap-3">
+          <img
+            src={currentUser[0]?.profile}
+            alt="Profile"
+            className="w-10 h-10 rounded-full border-2 border-white object-cover"
+          />
+          <div className="flex flex-col">
+            <span className="text-white font-semibold">
+              {currentUser[0]?.username || "You"}
+            </span>
+            <span className="text-sm text-gray-300">Your Story</span>
+          </div>
+        </div>
+        <button
+          onClick={handleCloseModal}
+          className="text-white text-3xl font-bold"
+          aria-label="Close"
+        >
+          &times;
+        </button>
+      </div>
+
+      {/* Upload Button (Only when media is selected) */}
+      {media && (
+        <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/60 to-transparent z-10">
+          <button
+            onClick={handleUploadStory}
+            disabled={loading}
+            className="w-full bg-pink-500 text-white py-3 rounded-md font-semibold text-lg hover:bg-pink-600"
+          >
+            {loading ? "Adding..." : "Add to Story"}
+          </button>
+        </div>
+      )}
+    </div>
+  </div>
+)}
+
+  </>
+);
+
 };
 
 export default AddStory;

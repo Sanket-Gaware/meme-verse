@@ -11,7 +11,7 @@ const UsersStory = ({ user, onClose }) => {
   const [exit, setExit] = useState(false);
   const [stories, setStories] = useState([]);
   const [currentStory, setCurrentStory] = useState(null);
-   
+    
   const dispatch = useDispatch();
   const videoRef = useRef(null);
   const durationRef = useRef(5000);
