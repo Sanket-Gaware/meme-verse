@@ -7,19 +7,19 @@ export const sendFriendReq = createAsyncThunk(
     const BASE_URL = import.meta.env.VITE_BASE_URL;
     const VITE_POST_ACCEPT_REJECT_REQ = import.meta.env
       .VITE_POST_ACCEPT_REJECT_REQ;
-      const token = localStorage.getItem("Token");
-      console.log( `=>Bearer ${token}`);
+    const token = localStorage.getItem("Token");
+    // console.log(`=>Bearer ${token}`);
     try {
       const response = await axios.post(
         `${BASE_URL}${VITE_POST_ACCEPT_REJECT_REQ}/${ReciverId}/send-request`,
-        
+        {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
-      ); 
+      );
       return response.data;
     } catch (error) {
       console.log("error redux");
@@ -36,6 +36,7 @@ export const rejectFriendReq = createAsyncThunk(
     try {
       const response = await axios.post(
         `${BASE_URL}${VITE_POST_REJECT_REQ}/${ReciverId}/reject-request`,
+        {},
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("Token")}`,
@@ -61,6 +62,7 @@ export const acceptFriendReq = createAsyncThunk(
     try {
       const response = await axios.post(
         `${BASE_URL}${VITE_POST_ACCEPT_REQ}/${ReciverId}/accept-request`,
+        {},
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("Token")}`,

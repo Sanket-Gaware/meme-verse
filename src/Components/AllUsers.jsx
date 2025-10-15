@@ -6,11 +6,11 @@
 //   setUserToChatR,
 // } from "../Store/memeSlice";
 // import { ArrowLeft, CheckCheck } from "lucide-react";
- 
+
 // export const AllUsers = ({
 //   currentUser,
 //   users,
-//   username, 
+//   username,
 //   setUsertoChat,
 //   home,
 // }) => {
@@ -124,7 +124,6 @@ import { ArrowLeft } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { setAllFriends, setAllFriendReq } from "../Store/memeSlice";
 import toast from "react-hot-toast";
-import axios from "axios";
 
 export const AllUsers = ({
   currentUser,
@@ -151,35 +150,34 @@ export const AllUsers = ({
 
   const sendRquest = async (ReciverId) => {
     // console.log(ReciverId);
-    // try {
-    //   const response = await dispatch(sendFriendReq(ReciverId)).unwrap();
-    //   console.log("friends req send =>" + response);
-    //   response.status === 200
-    //     ? toast.success("Request Send", { autoClose: 300 })
-    //     : toast.error("something went wrong ", { autoClose: 300 });
-    // } catch (error) {
-    //   if (error?.response?.status === 404) {
-    //     return error;
-    //   }
-    // }
     try {
-      
-       const token = localStorage.getItem("Token");
-       console.log( `=>Bearer ${token}`);
-      const response = await axios.post(
-        `https://node-js-view-point.onrender.com/api/auth/${ReciverId}/send-request`,
-        
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      ); 
-      return response.data;
+      const response = await dispatch(sendFriendReq(ReciverId)).unwrap();
+      console.log("friends req send =>" + response);
+      response.status === 200
+        ? toast.success("Request Send", { autoClose: 300 })
+        : toast.error("something went wrong ", { autoClose: 300 });
     } catch (error) {
-      console.log("error"+error.response.data.message);
-    }  
+      if (error?.response?.status === 404) {
+        return error;
+      }
+    }
+    // try {
+    //   const token = localStorage.getItem("Token");
+    //   console.log(`=>Bearer ${token}`);
+    //   const response = await axios.post(
+    //     `https://node-js-view-point.onrender.com/api/auth/${ReciverId}/send-request`,
+    //     {},
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //         "Content-Type": "application/json",
+    //       },
+    //     }
+    //   );
+    //   return response.data;
+    // } catch (error) {
+    //   console.log("error" + error.response.data.message);
+    // }
   };
   const rejectRquest = async (id) => {
     try {
