@@ -1,6 +1,32 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+export const getAllSentReq = createAsyncThunk(
+  "memes/sendfriendreq",
+  async (_, { rejectWithValue }) => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    const VITE_GET_ALL_SENT_REQ = import.meta.env.VITE_GET_ALL_SENT_REQ;
+    const token = localStorage.getItem("Token");
+    // console.log(`=>Bearer ${token}`);
+    try {
+      const response = await axios.get(
+        `${BASE_URL}${VITE_GET_ALL_SENT_REQ}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }  
+      );
+      return response.data;
+      // console.log(response);
+    } catch (error) {
+      console.log("error redux");
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
 export const sendFriendReq = createAsyncThunk(
   "memes/sendfriendreq",
   async (ReciverId, { rejectWithValue }) => {
@@ -18,9 +44,10 @@ export const sendFriendReq = createAsyncThunk(
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
+        } 
       );
       return response.data;
+      // console.log(response);
     } catch (error) {
       console.log("error redux");
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -57,7 +84,7 @@ export const acceptFriendReq = createAsyncThunk(
   async (ReciverId, { rejectWithValue }) => {
     const BASE_URL = import.meta.env.VITE_BASE_URL;
     const VITE_POST_ACCEPT_REQ = import.meta.env.VITE_POST_ACCEPT_REJECT_REQ;
-    console.log(localStorage.getItem("Token"));
+    // console.log(localStorage.getItem("Token"));
 
     try {
       const response = await axios.post(
@@ -432,6 +459,7 @@ const memeSlice = createSlice({
     users: [],
     friends: [],
     friendReq: [],
+    allSentReq:[],
     userToChat: "",
     unreadUserCounts: [],
     unreadCounts: {},
@@ -505,6 +533,9 @@ const memeSlice = createSlice({
     },
     setAllFriendReq: (state, action) => {
       state.friendReq = action.payload;
+    },
+    setAllSentReq: (state, action) => {
+      state.allSentReq = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -591,6 +622,7 @@ export const {
   setAllStories,
   setAllFriends,
   setAllFriendReq,
+  setAllSentReq
 } = memeSlice.actions;
 
 export default memeSlice.reducer;

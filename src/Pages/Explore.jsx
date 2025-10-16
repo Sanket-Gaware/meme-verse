@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import PostedMemeCard from "../Components/PostedMemeCard";
+import SearchPage from "./SearchPage";
 
 export default function Explore() {
   const { memes, loading, error } = useSelector((state) => state.meme);
@@ -21,15 +22,16 @@ export default function Explore() {
 
   return (
     <div className="md:p-5 p-1">
-      <div className="columns-2 md:columns-3 lg:columns-3 gap-4 space-y-4">
+      <SearchPage />
+      <div className="columns-2 md:columns-3 lg:columns-3 gap-1 space-y-1">
         {exploreMemes.map((meme, i) => (
           <div
             key={i}
-            className="break-inside-avoid cursor-pointer"
+            className="break-inside-avoid cursor-pointer border border-gray-100"
             onClick={() => setSelectedMeme(meme)}
           >
             <img
-              className="w-full h-auto rounded-lg shadow-sm hover:scale-105 transition-transform"
+              className="w-full h-auto rounded-0 shadow-sm hover:scale-105 transition-transform"
               src={meme.url}
               alt={meme.name}
             />
@@ -39,7 +41,7 @@ export default function Explore() {
       {/* model after clicking on meme */}
       {selectedMeme && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 overflow-y-auto"
+          className="fixed inset-0 bg-[rgba(0,0,0,0.8)] flex items-center justify-center z-50 overflow-y-auto"
           onClick={() => setSelectedMeme(null)}
         >
           <div className="bg-white rounded-xl px-6 p-2 w-11/12 md:w-2/3 lg:w-1/2 relative shadow-lg ">

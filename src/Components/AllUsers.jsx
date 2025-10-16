@@ -12,7 +12,7 @@
 //   users,
 //   username,
 //   setUsertoChat,
-//   home,
+//   home, 
 // }) => {
 //   const dispatch = useDispatch();
 //   // const navigate = useNavigate();
@@ -119,10 +119,11 @@ import {
   acceptFriendReq,
   rejectFriendReq,
   sendFriendReq,
+  getAllSentReq,
 } from "../Store/memeSlice";
 import { ArrowLeft } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { setAllFriends, setAllFriendReq } from "../Store/memeSlice";
+import { setAllFriends, setAllFriendReq, setAllSentReq } from "../Store/memeSlice";
 import toast from "react-hot-toast";
 
 export const AllUsers = ({
@@ -139,9 +140,12 @@ export const AllUsers = ({
   const fetchedUserIdsRef = useRef(new Set());
   const friends = useSelector((state) => state.meme.friends);
   const friendReq = useSelector((state) => state.meme.friendReq);
+  const sentReq = useSelector((state)=> state.meme.allSentReq);
   const location = useLocation();
   const path = location.pathname;
-  // console.log(currentUser[0]._id);
+
+  // console.log("sent-req >--->"+sentReq.length);
+
   const handleUserClick = (userId) => {
     setUsertoChat(userId);
     dispatch(setUserToChatR(userId));
@@ -152,72 +156,62 @@ export const AllUsers = ({
     // console.log(ReciverId);
     try {
       const response = await dispatch(sendFriendReq(ReciverId)).unwrap();
-      console.log("friends req send =>" + response);
-      response.status === 200
+      // console.log("friends req send =>" + response.message);
+      response.message == "Friend request sent"
         ? toast.success("Request Send", { autoClose: 300 })
-        : toast.error("something went wrong ", { autoClose: 300 });
+        : toast.error("something went wrong ", { autoClose: 300 }); 
+        fetchAllSendReq();
     } catch (error) {
-      if (error?.response?.status === 404) {
-        return error;
-      }
+        toast.error(error, { autoClose: 300 });
+        // return error;
     }
-    // try {
-    //   const token = localStorage.getItem("Token");
-    //   console.log(`=>Bearer ${token}`);
-    //   const response = await axios.post(
-    //     `https://node-js-view-point.onrender.com/api/auth/${ReciverId}/send-request`,
-    //     {},
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${token}`,
-    //         "Content-Type": "application/json",
-    //       },
-    //     }
-    //   );
-    //   return response.data;
-    // } catch (error) {
-    //   console.log("error" + error.response.data.message);
-    // }
   };
+
   const rejectRquest = async (id) => {
     try {
       const response = await dispatch(rejectFriendReq(id)).unwrap();
       // console.log("friends req=>" + response);
-      response.status === 200
+      response.message == 'Friend request rejected'
         ? toast.success("Request Rejected", { autoClose: 300 })
         : toast.error("something went wrong ", { autoClose: 300 });
     } catch (error) {
-      if (error?.response?.status === 404) {
-        return error;
-      }
+        toast.error(error, { autoClose: 300 });
     }
   };
 
   const acceptRquest = async (id) => {
-    console.log("friends req accept=>" + id);
+    // console.log("friends req accept=>" + id);
 
     try {
       const response = await dispatch(acceptFriendReq(id)).unwrap();
       // console.log("friends req=>" + id);
-      response.status === 200
-        ? toast.success("Request Accepted", { autoClose: 300 })
-        : toast.error("something went wrong ", { autoClose: 300 });
-    } catch (error) {
-      if (error?.response?.status === 404) {
-        return error;
+      if(response.message == "Friend request accepted"){
+         toast.success("Request Accepted", { autoClose: 300 })
+         fetchFriends();
+       }
+       else{
+        toast.error("something went wrong ", { autoClose: 300 });
       }
+    } catch (error){
+        toast.error(error, { autoClose: 300 });
     }
   };
-
+const fetchAllSendReq = async () => {
+    try {
+      const response = await dispatch(getAllSentReq()).unwrap();
+      // console.log("sent req >==>" + response.map((item) => item.username));
+      dispatch(setAllSentReq(response || []));
+    } catch (error) {
+             toast.error(error, { autoClose: 300 });
+    }
+  };
   const fetchFriendReq = async () => {
     try {
       const response = await dispatch(getAllFriendReqs()).unwrap();
       // console.log("friends req=>" + response.map((item) => item.fullname));
       dispatch(setAllFriendReq(response || []));
     } catch (error) {
-      if (error?.response?.status === 404) {
-        dispatch(setAllFriendReq(error.response || []));
-      }
+             toast.error(error, { autoClose: 300 });
     }
   };
 
@@ -227,14 +221,13 @@ export const AllUsers = ({
       // console.log("friends=>" + response.map((item) => item._id));
       dispatch(setAllFriends(response || []));
     } catch (error) {
-      if (error?.response?.status === 404) {
-        dispatch(setAllFriends(error.response || []));
-      }
+        toast.error(error, { autoClose: 300 });
     }
   };
   useEffect(() => {
     // if (!friends || friends?.length === 0) {
     fetchFriends();
+    fetchAllSendReq();
     // }
     fetchFriendReq();
   }, [dispatch]);
@@ -314,7 +307,7 @@ export const AllUsers = ({
     );
 
     // 3. Skip if the user has already received a friend request
-    const isRequested = friendReq?.some(
+    const isRequested = sentReq?.some(
       (req) => req.username === user.username
     );
 
@@ -323,14 +316,23 @@ export const AllUsers = ({
 
   const sortedUsers = useMemo(() => {
     // console.log(friends);
+    const friendUsernames = friends?.map((data) => data.username) || [];
+    const sentReqIds = sentReq?.map((data) => data._id) || [];
+
     const usersWithLastMsg = users
       .filter(
         (user) =>
           user.username !== username &&
-          user.username !==
-            (friends == ""
-              ? friends?.map((data) => data.username)
-              : fetchFriends())
+          !friendUsernames.includes(user.username) &&
+          !sentReqIds.includes(user.username)
+          // user.username !==
+          //   (friends !== ""
+          //     ? friends?.map((data) => data.username)
+          //     : fetchFriends())
+          //   && user._id !== 
+          //   (sentReq.length > 0 
+          //     ?  sentReq?.map((data)=> data?._id)
+          //     : fetchAllSendReq())
       )
       .map((user) => ({
         ...user,
@@ -354,12 +356,15 @@ export const AllUsers = ({
   return (
     <div className="md:mb-0 mb-5">
       <div className="flex gap-3 items-center my-2 px-5">
-        <button
+      {path == "/messages" ?
+        (<button
           className="cursor-pointer md:hidden"
           onClick={() => navigate("/home")}
         >
           <ArrowLeft />
-        </button>
+        </button>)
+        :(" ")
+      }
         <img
           className="h-12 w-12 rounded-full aspect-square"
           src={currentUser[0]?.profile}
@@ -374,62 +379,168 @@ export const AllUsers = ({
       </div>
       <div className="border-b border-gray-200 mx-1" />
 
-      {friends !== "" && friends?.length > 0 ? (
-        <div>
+      
+        <div className='max-h-[300px] overflow-y-auto'>
           <div className="border-b border-gray-200 mx-1" />
           <p className="font-bold text-gray-500 tracking-wide pt-1 flex items-center px-5">
             Friends
           </p>
-          <div className="px-5 mt-1 h-auto max-h-70 overflow-y-auro z-10">
-            {friends?.map((user) => (
-              <div
-                key={user._id}
-                className="flex justify-between items-center my-3 cursor-pointer "
-                onClick={() => handleUserClick(user._id)}
-              >
-                <div className="flex gap-3 items-center">
-                  <img
-                    className="h-12 w-12 rounded-full aspect-square"
-                    src={user.profile}
-                    alt="friend"
-                  />
-                  <div>
-                    <p className="text-sm tracking-wider font-semibold">
-                      {user.fullname}
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-red-500">
-                      {home === true
-                        ? user.username
-                        : user.lastMsg || "No message yet"}
-                    </p>
-                  </div>
-                </div>
 
-                {user.unread > 0 && (
-                  <span className="bg-sky-500 text-white text-xs px-2 py-1 rounded-full">
-                    {user.unread}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-          {friendReq !== "" && friendReq?.length > 0 ? (
+            {friendReq !== "" && friendReq?.length > 0 ? (
+                <div className="px-5 mt-1 h-auto max-h-70 overflow-y-auro z-10">
+                  {friendReq?.filter((user) => !friends?.some((friend) => friend._id === user._id))
+                    .map((user, i) => (
+                    <div key={i}>
+                      <div
+                        key={user._id}
+                        className="flex justify-between items-center mt-3 cursor-pointer "
+                        // onClick={() => handleUserClick(user._id)}
+                      >
+                        <div className="flex gap-3 items-center">
+                          <img
+                            className="h-12 w-12 rounded-full aspect-square"
+                            src={user.profile}
+                            alt="friend"
+                          />
+                          <div>
+                            <p className="text-sm tracking-wider font-semibold">
+                              {user.fullname}
+                            </p>
+                            <p className="text-sm text-gray-500 dark:text-red-500 truncate">
+                              {home === true
+                                ? user.username
+                                : user.lastMsg || "No message yet"}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex justify-center gap-3 items-center w-full">
+                        <button
+                          onClick={() => acceptRquest(user._id)}
+                          className="px-3 py-1 text-xs  cursor-pointer rounded-full border border-sky-500 text-sky-500 hover:bg-sky-500 hover:text-white transition duration-300 shadow-sm flex-shrink-0 me-2"
+                        >
+                          Accept
+                        </button>
+                        <button
+                          onClick={() => rejectRquest(user._id)}
+                          className=" px-3 py-1 text-xs  cursor-pointer rounded-full border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition duration-300 shadow-sm flex-shrink-0 me-2"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                ""
+              )}
+
+            {friends !== "" && friends?.length > 0 ? (
             <div className="px-5 mt-1 h-auto max-h-70 overflow-y-auro z-10">
-              {friendReq?.map((user) => (
-                <>
-                  <div
-                    key={user._id}
-                    className="flex justify-between items-center mt-3 cursor-pointer "
-                    // onClick={() => handleUserClick(user._id)}
+              {friends?.map((user) => (
+                <div
+                  key={user._id}
+                  className="flex justify-between items-center my-3 cursor-pointer "
+                  onClick={() => handleUserClick(user._id)}
+                >
+                  <div className="flex gap-3 items-center">
+                    <img
+                      className="h-12 w-12 rounded-full aspect-square"
+                      src={user.profile}
+                      alt="friend"
+                    />
+                    <div>
+                      <p className="text-sm tracking-wider font-semibold">
+                        {user.fullname}
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-red-500">
+                        {home === true
+                          ? user.username
+                          : user.lastMsg || "No message yet"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {user.unread > 0 && (
+                    <span className="bg-sky-500 text-white text-xs px-2 py-1 rounded-full">
+                      {user.unread}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+             ) : (
+            ""
+            )}
+            
+
+            {sentReq !== "" && sentReq?.length > 0 ? (
+                <div className="px-5 mt-1 h-auto max-h-70 overflow-y-auro z-10">
+                  {sentReq?.filter((user) => !friends?.some((friend) => friend._id === user._id))
+                    .map((user, i) => (
+                     <div
+                      key={user._id}
+                      className="flex justify-between items-center my-3 cursor-pointer "
+                      // onClick={() => handleUserClick(user._id)}
+                      >
+                      <div className="flex justify-between items-center w-full">
+                        {/* Left side: Profile info */}
+                        <div className="flex gap-2 items-center min-w-0">
+                          <img
+                            className="h-12 w-12 rounded-full aspect-square flex-shrink-0"
+                            src={user.profile}
+                            alt="user"
+                          />
+                          <div className="min-w-0 ">
+                            <p className="text-sm tracking-wider font-semibold truncate">
+                              {user.fullname}
+                            </p>
+                            <p className="text-sm text-gray-500 dark:text-red-500 truncate">
+                              {home === true
+                                ? user.username
+                                : user.lastMsg || "No message yet"}
+                            </p>
+                          </div>
+                        </div>
+                       
+                        <button
+                          className="ml-1 px-3 py-1 text-xs  cursor-pointer rounded-full border border-orange-300 text-orange-400 transition duration-300 shadow-sm flex-shrink-0 me-2"
+                        >
+                        Pending
+                        </button>
+                      </div>
+              </div>
+                  ))}
+                </div>
+              ) : (
+                ""
+              )}
+
+        </div>
+     
+      {path !== "/messages" ?
+      (<>
+          <div className="font-bold text-gray-500 tracking-wide pt-1 flex items-center px-5">
+            Users
+          </div>
+          <div className="px-2 mt-1 max-h-[300px] overflow-y-auto scrollbar-thin">
+            {(path == "/messages" ? sortedUsers : usersWithoutfriends)?.map(
+              (user) => (
+                <div
+                  key={user._id}
+                  className="flex justify-between items-center my-3 cursor-pointer "
+                  // onClick={() => handleUserClick(user._id)}
                   >
-                    <div className="flex gap-3 items-center">
+                  <div className="flex justify-between items-center w-full">
+                    {/* Left side: Profile info */}
+                    <div className="flex gap-2 items-center min-w-0">
                       <img
-                        className="h-12 w-12 rounded-full aspect-square"
+                        className="h-12 w-12 rounded-full aspect-square flex-shrink-0"
                         src={user.profile}
-                        alt="friend"
+                        alt="user"
                       />
-                      <div>
-                        <p className="text-sm tracking-wider font-semibold">
+                      <div className="min-w-0 ">
+                        <p className="text-sm tracking-wider font-semibold truncate">
                           {user.fullname}
                         </p>
                         <p className="text-sm text-gray-500 dark:text-red-500 truncate">
@@ -439,84 +550,31 @@ export const AllUsers = ({
                         </p>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex justify-center gap-3 items-center w-full">
+                    {/* Right side: Add Friend button */}
+                    {/* {home === true ? ( */}
                     <button
-                      onClick={() => acceptRquest(user._id)}
-                      className="px-3 py-1 text-xs  cursor-pointer rounded-full border border-sky-500 text-sky-500 hover:bg-sky-500 hover:text-white transition duration-300 shadow-sm flex-shrink-0 me-2"
+                      onClick={() => sendRquest(user._id)}
+                      className="ml-1 px-3 py-1 text-xs  cursor-pointer rounded-full border border-sky-500 text-sky-500 hover:bg-sky-500 hover:text-white transition duration-300 shadow-sm flex-shrink-0 me-4"
                     >
-                      Accept
+                      Add +
                     </button>
-                    <button
-                      onClick={() => rejectRquest(user._id)}
-                      className=" px-3 py-1 text-xs  cursor-pointer rounded-full border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition duration-300 shadow-sm flex-shrink-0 me-2"
-                    >
-                      Reject
-                    </button>
+                    {/* ) : (
+                    ""
+                  )} */}
                   </div>
-                </>
-              ))}
-            </div>
-          ) : (
-            ""
-          )}
-        </div>
-      ) : (
-        ""
-      )}
 
-      <p className="font-bold text-gray-500 tracking-wide pt-1 flex items-center px-5">
-        Users
-      </p>
-      <div className="px-2 mt-1 h-75 overflow-y-auto no-scrollbar">
-        {(path == "/messages" ? sortedUsers : usersWithoutfriends)?.map(
-          (user) => (
-            <div
-              key={user._id}
-              className="flex justify-between items-center my-3 cursor-pointer "
-              // onClick={() => handleUserClick(user._id)}
-            >
-              <div className="flex justify-between items-center w-full">
-                {/* Left side: Profile info */}
-                <div className="flex gap-2 items-center min-w-0">
-                  <img
-                    className="h-12 w-12 rounded-full aspect-square flex-shrink-0"
-                    src={user.profile}
-                    alt="user"
-                  />
-                  <div className="min-w-0 ">
-                    <p className="text-sm tracking-wider font-semibold truncate">
-                      {user.fullname}
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-red-500 truncate">
-                      {home === true
-                        ? user.username
-                        : user.lastMsg || "No message yet"}
-                    </p>
-                  </div>
+                  {user.unread > 0 && (
+                    <span className="bg-sky-500 text-white text-xs px-2 py-1 rounded-full">
+                      {user.unread}
+                    </span>
+                  )}
                 </div>
-                {/* Right side: Add Friend button */}
-                {/* {home === true ? ( */}
-                <button
-                  onClick={() => sendRquest(user._id)}
-                  className="ml-1 px-3 py-1 text-xs  cursor-pointer rounded-full border border-sky-500 text-sky-500 hover:bg-sky-500 hover:text-white transition duration-300 shadow-sm flex-shrink-0 me-2"
-                >
-                  Add +
-                </button>
-                {/* ) : (
-                ""
-              )} */}
-              </div>
-
-              {user.unread > 0 && (
-                <span className="bg-sky-500 text-white text-xs px-2 py-1 rounded-full">
-                  {user.unread}
-                </span>
-              )}
-            </div>
-          )
-        )}
-      </div>
+              )
+            )}
+          </div>
+          </>)
+          : ("")
+        }
     </div>
   );
 };

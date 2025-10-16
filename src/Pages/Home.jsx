@@ -148,7 +148,7 @@ function Home() {
           likedMemes={likedMemes}
           comments={comments}
           users={users}
-        />
+        /> 
       </div>
       <div className="col-span-4 border-l-1 border-gray-300 top-0 hidden md:block">
         <div className="fixed">

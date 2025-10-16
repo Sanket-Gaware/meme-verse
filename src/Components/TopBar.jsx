@@ -95,7 +95,13 @@ useEffect(() => {
           {/* Your Story */}
           <div
             className="flex flex-col items-center relative flex-shrink-0"
-            onClick={() => setShowAddStory(true)}
+            // onClick={() => 
+            // navigate('/story', {
+            //         state: {
+            //           currentUser: currentUser
+            //         }}
+            //         )}
+            onClick={()=>setShowAddStory(true)}
           >
             <img
               className="h-14 w-14 rounded-full border-2 border-pink-500 object-cover"
@@ -109,7 +115,7 @@ useEffect(() => {
               <div className="fixed inset-0 z-50 bg-white flex items-center justify-center overflow-auto">
                 <AddStory
                   userId={currentUser[0]?._id}
-                  onClose={() => setShowAddStory(false)}
+                  setShowAddStory={setShowAddStory}
                   currentUser={currentUser}
                 />
               </div>

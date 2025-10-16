@@ -16,3 +16,23 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Thin scrollbar */
+.scrollbar-thin {
+  scrollbar-width: thin;               /* Firefox */
+  scrollbar-color: #888 transparent;   /* Firefox */
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px; /* Adjust width here */
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+}

@@ -44,20 +44,32 @@ const SearchPage = () => {
   const handleBack = () => setSelectedMeme(null);
 
   return (
-    <div className="p-4 max-w-3xl mx-auto">
+    <div className="p-1 pb-0 max-w-3xl mx-auto">
       {!selectedMeme ? (
         <>
-          <h1 className="text-2xl font-bold mb-4 flex items-center gap-2">
-            <Search className="w-7 h-7 text-blue-600" /> Search Memes
-          </h1>
-
+          {/*<div className="text-2xl font-bold mb-4 flex items-center gap-2 border  rounded-xl focus:ring-2 focus:ring-blue-500">
+            <Search className="w-7 h-7 text-blue-600 ms-3" />
           <input
             type="text"
-            placeholder="Type meme name..."
-            className="w-full px-4 py-2 border rounded-xl mb-6 focus:ring-2 focus:ring-blue-500"
+            placeholder="Search Memes..."
+            className="w-full px-4 py-2 border-0 flex items-center focus:ring-0 focus:ring-blue-500"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
+        </div>*/}
+        <div className="relative">
+          <div className="text-2xl font-bold mb-1 flex items-center gap-2 border border-gray-300 rounded-l px-2 focus-within:ring-2 focus-within:ring-blue-500">
+            <Search className="w-7 h-7 text-blue-400 ms-1" />
+            <input
+              type="text"
+              placeholder="Search Memes..."
+              className="w-full px-4 py-2 border-0 outline-none bg-transparent text-base"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
+        </div>
+
 
           {query && filteredMemes.length === 0 && (
             <p className="text-center text-gray-500">No memes found 😢</p>

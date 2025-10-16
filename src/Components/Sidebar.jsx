@@ -5,7 +5,7 @@ import {
   HomeIcon,
   LogOut,
   MessagesSquare,
-  SearchIcon,
+  Users,
   UploadCloudIcon,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -91,11 +91,11 @@ function Sidebar() {
               Messages
             </NavLink>
             <NavLink
-              to="search"
+              to="users"
               className="flex gap-3 text-lg mb-10 cursor-pointer  hover:text-blue-800"
               // onClick={() => navigate("/main/search")}
             >
-              <SearchIcon /> Search
+              <Users /> Friends
             </NavLink>
             <NavLink
               to="explore"
@@ -147,7 +147,7 @@ function Sidebar() {
       {/* Bottom Navbar */}
       <div className="fixed bottom-0 w-full bg-white border-t border-gray-300 flex justify-around items-center md:hidden p-2 z-50 py-2">
         <HomeIcon className="w-6 h-6" onClick={() => navigate("home")} />
-        <SearchIcon className="w-6 h-6" onClick={() => navigate("search")} />
+        <Users className="w-6 h-6" onClick={() => navigate("users")} />
         <CompassIcon className="w-6 h-6" onClick={() => navigate("explore")} />
         <HeartIcon
           className="w-6 h-6"

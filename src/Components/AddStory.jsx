@@ -119,15 +119,17 @@
 // };
 
 // export default AddStory;
-
+import { ArrowLeft } from "lucide-react";
 import React, { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { postStoryImage, saveStoryToDB } from "../Store/memeSlice";
 import imageCompression from 'browser-image-compression';
+import { useNavigate } from "react-router-dom";
 
 const AddStory = ({ userId, currentUser }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [media, setMedia] = useState(null); // image or video file
   const [preview, setPreview] = useState(null);
@@ -265,21 +267,26 @@ const convertToWebP = (dataUrl, originalFileName) => {
     {/* ======= Story UI: Only show when modal is NOT open ======= */}
     {!showModal && (
       <div className="flex flex-col justify-between h-full min-h-screen px-4 py-6">
-        <div className="flex items-start gap-3">
-          <img
-            src={currentUser[0]?.profile}
-            alt="Profile"
-            className="w-12 h-12 rounded-full border-2 border-white object-cover"
-          />
-          <div className="flex flex-col">
-            <span className="text-dark font-semibold">
-              {currentUser[0]?.fullname || "You"}
-            </span>
-            <span className="text-sm text-gray-300">Your Story</span>
+          <div className="flex items-start gap-3">
+              <button
+                className="cursor-pointer md:hidden"
+                onClick={() => navigate(0)}
+              >
+                <ArrowLeft />
+              </button>
+            <img
+              src={currentUser[0]?.profile}
+              alt="Profile"
+              className="w-12 h-12 rounded-full border-2 border-white object-cover"
+            />
+            <div className="flex flex-col">
+              <span className="text-dark font-semibold">
+                {currentUser[0]?.fullname || "You"}
+              </span>
+              <span className="text-sm text-gray-300">Your Story</span>
+            </div>
           </div>
-          {/* 🚫 Remove this close button from here */}
-        </div>
-
+       
         {/* Add Story Button */}
         <button
           onClick={handleOpenFile}

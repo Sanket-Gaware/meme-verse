@@ -14,15 +14,17 @@ const AuthRoutes = React.lazy(() => import("./AuthGuard"));
 const MainWrapper = React.lazy(() => import("../Pages/MainWrapper"));
 const Home = React.lazy(() => import("../Pages/Home"));
 const Explore = React.lazy(() => import("../Pages/Explore"));
-const Search = React.lazy(() => import("../Pages/SearchPage"));
+const UsersPage = React.lazy(() => import("../Pages/UsersPage"));
 const Leaderboard = React.lazy(() => import("../Pages/Leaderboard"));
 const Profile = React.lazy(() => import("../Pages/Profile"));
 const UploadMeme = React.lazy(() => import("../Pages/UploadMeme"));
 const Inbox = React.lazy(() => import("../Pages/Messages/Inbox"));
 const Loader = React.lazy(() => import("../Components/Loader"));
 const PageNotFound = React.lazy(() => import("../Pages/PageNotFound"));
+const StoryPage = React.lazy(()=> import("../Pages/StoryPage"));
 
 const RouteFile = () => {
+  
   const router = createBrowserRouter([
     {
       path: "/",
@@ -53,8 +55,8 @@ const RouteFile = () => {
           element: <Explore />,
         },
         {
-          path: "search",
-          element: <Search />,
+          path: "users",
+          element: <UsersPage />,
         },
         {
           path: "leaderboard",
@@ -71,6 +73,10 @@ const RouteFile = () => {
         {
           path: "messages",
           element: <Inbox />,
+        },
+        {
+          path: "/story",
+          element: <StoryPage />,
         },
       ],
     },
