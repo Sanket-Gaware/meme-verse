@@ -89,30 +89,29 @@ function Home() {
   //   }
   // }, [dispatch, memes, allUsersMemes, processUserMemes]);
 
-  const init = useCallback(async () => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
 
-    try {
+const init = useCallback(async () => {
+ if (sessionStorage.getItem('hasFetchedMemes')) return;
+
+  try {
+    let userMemes;
+
+      // console.log("allUsersMemes");
       await dispatch(fetchMemes()).unwrap();
       await dispatch(fetchUsers()).unwrap();
-
-      if (!hasFetchedAllMemes) {
-        const response = await dispatch(getAllMemes()).unwrap();
-        const userMemes = processUserMemes(response.data);
-        setNewMemes(memes.concat(userMemes));
-      } else {
-        const userMemes = processUserMemes(allUsersMemes.data);
-        setNewMemes(memes.concat(userMemes));
-      }
-    } catch (error) {
-      console.error("Fetch error:", error);
-    }
-  }, [dispatch, memes, allUsersMemes, hasFetchedAllMemes, processUserMemes]);
+      const response = await dispatch(getAllMemes()).unwrap();
+      userMemes = processUserMemes(response.data);
+    
+    setNewMemes(memes.concat(userMemes));
+    sessionStorage.setItem('hasFetchedMemes', 'true');
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
+}, [dispatch, memes, allUsersMemes, hasFetchedAllMemes, processUserMemes]);
 
   // Single effect that runs the init function once
   useEffect(() => {
-    init();
+    sessionStorage.getItem('hasFetchedMemes') ? '' : init();
   }, [init]);
 
   useEffect(() => {
@@ -129,15 +128,18 @@ function Home() {
       : "";
   }, [error]);
 
-  if (loading) return <>{newMemes == "" ? <Loader /> : " "}</>;
-  if (error)
-    return (
-      <p className="flex items-center my-auto justify-center text-red-400">
-        Error: {error}
-      </p>
-    );
-
   const currentUser = users.filter((user) => user.username == username);
+
+  if (loading) return <>{!hasFetchedAllMemes ? <Loader /> : <TopBar currentUser={currentUser} users={users} username={username} />}</>;
+  if (error) {
+      toast.error(error, {
+        autoClose: 300,
+        closeButton: true,
+      });
+    }
+    // <p className="flex items-center my-auto justify-center text-red-400">
+      //   Error: {error}
+      // </p>
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 w-full ">

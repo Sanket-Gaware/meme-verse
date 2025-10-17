@@ -43,7 +43,7 @@ useEffect(() => {
             },
           });
 
-        console.log(response.data.stories[0]);
+        // console.log(response.data.stories[0]);
           // console.log("inside story fun")
           const userStories = response?.data?.stories?.filter(
             (item) => item.userId._id !== currentUser._id
@@ -52,7 +52,7 @@ useEffect(() => {
           dispatch(setAllStories( response?.data ));
           // setStories(userStories);
           // setCurrentStory(userStories?.[0]);
-          console.log(userStories?.[0]?.mediaUrl + " <=");
+          // console.log(userStories?.[0]?.mediaUrl + " <=");
 
           return response?.data;
         } catch (error) {

@@ -353,6 +353,10 @@ const fetchAllSendReq = async () => {
     });
   }, [users, username, lastMessages, unreadCounts]);
 
+    const handleViewProfile = (username) => {
+    navigate(`/profile/${username}`);
+  };
+
   return (
     <div className="md:mb-0 mb-5">
       <div className="flex gap-3 items-center my-2 px-5">
@@ -401,6 +405,7 @@ const fetchAllSendReq = async () => {
                             className="h-12 w-12 rounded-full aspect-square"
                             src={user.profile}
                             alt="friend"
+                            onClick={() => (path == "/messages" ? "" : handleViewProfile(user.username))}
                           />
                           <div>
                             <p className="text-sm tracking-wider font-semibold">
@@ -441,7 +446,7 @@ const fetchAllSendReq = async () => {
                 <div
                   key={user._id}
                   className="flex justify-between items-center my-3 cursor-pointer "
-                  onClick={() => handleUserClick(user._id)}
+                  onClick={() => (path == "/messages" ? handleUserClick(user._id) : handleViewProfile(user.username))}
                 >
                   <div className="flex gap-3 items-center">
                     <img
@@ -490,6 +495,7 @@ const fetchAllSendReq = async () => {
                             className="h-12 w-12 rounded-full aspect-square flex-shrink-0"
                             src={user.profile}
                             alt="user"
+                            onClick={() => (path == "/messages" ? "" : handleViewProfile(user.username))}
                           />
                           <div className="min-w-0 ">
                             <p className="text-sm tracking-wider font-semibold truncate">
@@ -538,6 +544,7 @@ const fetchAllSendReq = async () => {
                         className="h-12 w-12 rounded-full aspect-square flex-shrink-0"
                         src={user.profile}
                         alt="user"
+                        onClick={() => handleViewProfile(user.username)}
                       />
                       <div className="min-w-0 ">
                         <p className="text-sm tracking-wider font-semibold truncate">

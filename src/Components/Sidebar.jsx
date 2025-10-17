@@ -9,8 +9,10 @@ import {
   UploadCloudIcon,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import store from "../Store/store";
+import { persister } from "../Store/store";
 
 function Sidebar() {
   const navigate = useNavigate();
@@ -18,6 +20,7 @@ function Sidebar() {
   const { users } = useSelector((state) => state.meme);
   const currentUser = users?.filter((user) => user.username == username);
   const { unreadUserCounts } = useSelector((state) => state.meme);
+  const dispatch = useDispatch();
 
   const showLogoutToast = () => {
     toast.custom((t) => (
@@ -52,6 +55,9 @@ function Sidebar() {
             onClick={() => {
               toast.dismiss(t.id);
               localStorage.removeItem("Token");
+              persister.purge();
+              store.dispatch({ type: "RESET" });
+              sessionStorage.removeItem('hasFetchedMemes')
               navigate("/");
             }}
             className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-bold text-red-600 hover:text-indigo-500 focus:outline-none focus:ring-0 focus:ring-indigo-500"

@@ -1,3 +1,9 @@
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { getUserMemes } from "../Store/memeSlice";
  import {
   CircleX,
   Heart,
@@ -5,25 +11,33 @@
   MessageCircle,
   Share2Icon,
   Trash2,
+  ArrowLeft
 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-import { deleteUserMeme, getUserMemes } from "../Store/memeSlice";
-import store  from "../Store/store";
-import { persister } from "../Store/store";
- 
-const Profile = () => {
-  const username = localStorage.getItem("username");
-  const { users, userMemes } = useSelector((state) => state.meme);
-  const currentUser = users.filter((user) => user.username == username);
+
+const ProfileComponent = ( ) => {
   const navigate = useNavigate();
+  const friends = useSelector((state) => state.meme.friends);
+  const [newUserMemes, setNewUserMemes] = useState([]);
   const [selectedMeme, setSelectedMeme] = useState(null);
   const dispatch = useDispatch();
-  const [newUserMemes, setNewUserMemes] = useState([]);
 
-  useEffect(() => {
+  // Get username from route params
+  const { username } = useParams();
+
+  // Selector to get users array
+  const { users,userMemes } = useSelector((state) => state.meme);
+
+  // Find the selected user based on username from route
+  const selectedUser = users.find((user) => user.username === username);
+
+  // Dummy data if user not found
+  if (!selectedUser) {
+    return <div>User not found</div>;
+  }
+
+  const currentUser = selectedUser;
+  const usernameFriendList = friends.some(friend => friend.username === username);
+useEffect(() => {
     userMemes == ""
       ? handleGetUserMemes()
       : userMemes.message == `Memes uploaded by ${username}`
@@ -60,151 +74,50 @@ const Profile = () => {
     }
   };
 
-  const user = {
-    username: "meme_master",
-    bio: "Making the internet laugh one meme at a time 😂",
-    posts: 34,
-    followers: 1200,
-    following: 180,
-  };
-
-  const showLogoutToast = () => {
-    toast.custom((t) => (
-      <div
-        className={`${
-          t.visible ? "animate-enter" : "animate-leave"
-        } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-gray-300 ring-opacity-5`}
-      >
-        <div className="flex-1 w-0 p-4">
-          <div className="flex items-start">
-            <div className="flex-shrink-0 pt-0.5">
-              <img
-                className="h-10 w-10 rounded-full"
-                src={
-                  currentUser != ""
-                    ? currentUser[0]?.profile
-                    : "https://img.freepik.com/free-vector/user-circles-set_78370-4704.jpg?t=st=1742805601~exp=1742809201~hmac=64f7a109cb501fd22d07bf68bfef0d9142a1d68fad1b2c09189645fc012302b2&w=740"
-                }
-                alt=""
-              />
-            </div>
-            <div className="ml-3 flex-1">
-              <p className="text-sm text-gray-900 font-bold">
-                {currentUser[0]?.fullname}
-              </p>
-              <p className="mt-1 text-sm text-gray-500">See you next time 👋</p>
-            </div>
-          </div>
-        </div>
-        <div className="flex border-l border-gray-200">
-          <button
-            onClick={() => {
-              toast.dismiss(t.id);
-              localStorage.removeItem("Token");
-              persister.purge();
-              store.dispatch({ type: "RESET" });
-              sessionStorage.removeItem('hasFetchedMemes')
-              navigate("/");
-            }}
-            className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-bold text-red-600 hover:text-indigo-500 focus:outline-none focus:ring-0 focus:ring-indigo-500"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
-    ));
-  };
-
-  const confirmDeletePost = (id) => {
-    toast.custom((t) => (
-      <div className="bg-white shadow-md rounded-md p-4 flex items-center gap-4">
-        <p className="text-sm font-medium">Delete this post?</p>
-        <button
-          onClick={() => {
-            toast.dismiss(t.id);
-            deleteUserPost(id);
-          }}
-          className="text-red-600 font-bold cursor-pointer"
-        >
-          Delete
-        </button>
-        <button
-          onClick={() => toast.dismiss(t.id)}
-          className="text-gray-500 font-medium cursor-pointer"
-        >
-          Cancel
-        </button>
-      </div>
-    ));
-  };
-  const deleteUserPost = async (id) => {
-    const data = {
-      memeId: id,
-      userId: currentUser[0]._id,
-    };
-    setSelectedMeme(null);
-    try {
-      const response = await dispatch(deleteUserMeme(data)).unwrap();
-      // console.log(response);
-      if (response.status == 200) {
-        await dispatch(getUserMemes(username)).unwrap();
-        toast.success("Post Deleted Successfully");
-      }
-    } catch (error) {
-      toast.error(error.message);
-      // console.log(error);
-    }
-  };
   return (
-    <div className="max-w-4xl mx-auto p-2 md:p-4">
-      {/* Profile Header */}
-      <div className="absolute right-0 z-50 flex md:hidden justify-end pr-2">
-        <button
-          onClick={showLogoutToast}
-          className="flex gap-1 items-center font-bold text-red-400 border text-sm border-red-200 p-2 px-3 rounded-lg cursor-pointer hover:border-red-500"
-        >
-          Logout <LogOut size={17} />
-        </button>
+    <div className="max-w-4xl mx-auto p-2 md:p-4 relative">      
+      <div className="absolute left-0 z-50 flex md:hidden justify-start pl-2">
+              <button
+                className="cursor-pointer"
+                onClick={() => {
+                  navigate('/home')
+                }}> 
+                <ArrowLeft />
+              </button>
       </div>
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
         <img
           src={
-            currentUser != ""
-              ? currentUser[0]?.profile
-              : "https://img.freepik.com/free-vector/user-circles-set_78370-4704.jpg?t=st=1742805601~exp=1742809201~hmac=64f7a109cb501fd22d07bf68bfef0d9142a1d68fad1b2c09189645fc012302b2&w=740"
+            currentUser?.profile ||
+            'https://img.freepik.com/free-vector/user-circles-set_78370-4704.jpg?t=st=1742805601~exp=1742809201~hmac=64f7a109cb501fd22d07bf68bfef0d9142a1d68fad1b2c09189645fc012302b2&w=740'
           }
           alt="Profile"
           className="w-28 h-28 rounded-full object-cover border-2 border-gray-300"
         />
         <div className="flex-1">
           <div className="flex items-center justify-center sm:justify-start gap-4">
-            <h2 className="text-2xl font-bold">{currentUser[0]?.fullname}</h2>
-            <button className="bg-gray-200 px-4 py-1 rounded-md text-sm font-bold text-gray-600 cursor-pointer hover:text-black">
-              Edit Profile
-            </button>
+            <h2 className="text-2xl font-bold">{currentUser?.fullname}</h2>
+           
           </div>
           <div className="flex justify-center sm:justify-start gap-6 mt-3 text-sm">
             <p>
-              <span className="font-semibold">{newUserMemes.length}</span> posts
+              <span className="font-semibold">{newUserMemes?.length}</span> posts
             </p>
             <p>
-              <span className="font-semibold">{users.length - 1}</span>{" "}
-              followers
+              <span className="font-semibold">{users?.length - 1}</span> followers
             </p>
             <p>
-              <span className="font-semibold">{users.length - 1}</span>{" "}
-              following
+              <span className="font-semibold">{users?.length - 1}</span> following
             </p>
           </div>
           <p className="mt-3 text-center sm:text-left text-gray-600 text-sm">
-            {user.bio}
+           Making the internet laugh one meme at a time 😂{/*{user.bio}*/}
           </p>
         </div>
       </div>
-
       <hr className="my-6 border-gray-300" />
-
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-3  md:pb-0 pb-12">
+      {usernameFriendList ? 
+      (<div className="grid grid-cols-2 gap-2 md:grid-cols-3  md:pb-0 pb-12">
         {newUserMemes.map((meme, idx) => (
           <div
             key={idx}
@@ -220,8 +133,11 @@ const Profile = () => {
               <Heart color="white" fill="white" size={32} />
             </div>
           </div>
-        ))}
-      </div>
+        ))} 
+      </div>)
+      : ( <div className='flex justify-center items-center text-xl text-gray-400'>Posts Not Visible</div> )
+    }
+
       {selectedMeme && (
         <div className="fixed inset-0 z-50 bg-black/60 flex justify-center items-center p-4">
           <div className="bg-white rounded-xl shadow-lg max-w-md w-full overflow-hidden relative">
@@ -237,13 +153,13 @@ const Profile = () => {
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center space-x-3">
                 <img
-                  src={currentUser[0].profile}
+                  src={currentUser.profile}
                   alt="Meme thumbnail"
                   className="w-10 h-10 rounded-full object-cover border border-gray-300"
                 />
                 <div>
                   <h2 className="font-semibold text-gray-900">
-                    {currentUser[0]?.fullname}
+                    {currentUser?.fullname}
                   </h2>
                   <p className="text-sm text-gray-500">{selectedMeme?.name}</p>
                 </div>
@@ -282,12 +198,12 @@ const Profile = () => {
                   </button>
                 </div>
                 <div className=" pt-2 text-gray-600 ">
-                  <button
+                  {/*<button
                     className="hover:text-red-500 transition cursor-pointer"
                     onClick={() => confirmDeletePost(selectedMeme.id)}
                   >
                     <Trash2 />
-                  </button>
+                  </button>*/}
                 </div>
               </div>
             </div>
@@ -298,4 +214,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default ProfileComponent;

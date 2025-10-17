@@ -22,6 +22,7 @@ const Inbox = React.lazy(() => import("../Pages/Messages/Inbox"));
 const Loader = React.lazy(() => import("../Components/Loader"));
 const PageNotFound = React.lazy(() => import("../Pages/PageNotFound"));
 const StoryPage = React.lazy(()=> import("../Pages/StoryPage"));
+const ProfileComponent = React.lazy(()=> import("../Components/ProfileComponent"));
 
 const RouteFile = () => {
   
@@ -77,6 +78,10 @@ const RouteFile = () => {
         {
           path: "/story",
           element: <StoryPage />,
+        },
+        {
+          path:"/profile/:username",
+          element: <ProfileComponent />,
         },
       ],
     },
