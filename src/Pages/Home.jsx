@@ -132,14 +132,11 @@ const init = useCallback(async () => {
 
   if (loading) return <>{!hasFetchedAllMemes ? <Loader /> : <TopBar currentUser={currentUser} users={users} username={username} />}</>;
   if (error) {
-      toast.error(error, {
-        autoClose: 300,
-        closeButton: true,
-      });
+       <p className="flex items-center my-auto justify-center text-red-400">
+        Error: {error}
+      </p>
     }
-    // <p className="flex items-center my-auto justify-center text-red-400">
-      //   Error: {error}
-      // </p>
+   
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 w-full ">

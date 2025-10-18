@@ -236,6 +236,7 @@ const convertToWebP = (dataUrl, originalFileName) => {
       if (res2.status === 201) {
         toast.success("Story uploaded successfully!");
         handleCloseModal();
+        navigate(0);
       } else {
         toast.error("Failed to save story.");
       }
@@ -263,17 +264,20 @@ const convertToWebP = (dataUrl, originalFileName) => {
       onChange={handleFileChange}
       className="hidden"
     />
-
+ 
     {/* ======= Story UI: Only show when modal is NOT open ======= */}
     {!showModal && (
       <div className="flex flex-col justify-between h-full min-h-screen px-4 py-6">
           <div className="flex items-start gap-3">
+             <div className="absolute left-0 z-50 flex md:hidden justify-start pl-2">
               <button
-                className="cursor-pointer md:hidden"
-                onClick={() => navigate(0)}
-              >
+                className="cursor-pointer"
+                onClick={() => {
+                  navigate(0);
+                }}> 
                 <ArrowLeft />
               </button>
+            </div>
             <img
               src={currentUser[0]?.profile}
               alt="Profile"

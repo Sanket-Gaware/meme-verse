@@ -101,15 +101,20 @@ useEffect(() => {
             //           currentUser: currentUser
             //         }}
             //         )}
-            onClick={()=>setShowAddStory(true)}
+            // onClick={()=>setShowAddStory(true)}
           >
             <img
               className="h-14 w-14 rounded-full border-2 border-pink-500 object-cover"
               src={currentUser[0]?.profile}
               alt="Your Story"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                openStory(currentUser[0]);
+              }}
             />
             <div className="absolute bottom-3 right-0 bg-white rounded-full p-1 shadow-md">
-              <Plus className="h-3 w-3 text-pink-500" />
+              <Plus className="h-3 w-3 text-pink-500" onClick={()=>setShowAddStory(true)} />
             </div>
             {showAddStory && (
               <div className="fixed inset-0 z-50 bg-white flex items-center justify-center overflow-auto">

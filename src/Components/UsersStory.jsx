@@ -153,7 +153,7 @@ const UsersStory = ({ user, onClose }) => {
         />
       ) : (
         <img
-          src={currentStory?.mediaUrl}
+          src={currentStory?.mediaUrl ? currentStory?.mediaUrl : "https://ih1.redbubble.net/image.418462666.7453/raf,750x1000,075,t,FFFFFF:97ab1c12de.u7.jpg"}
           alt="Story"
           className=" inset-0 w-full h-auto object-contain md:object-cover"
         />
