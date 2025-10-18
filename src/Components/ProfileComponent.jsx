@@ -80,11 +80,12 @@ useEffect(() => {
               <button
                 className="cursor-pointer"
                 onClick={() => {
-                  navigate('/home')
+                  navigate(-1);
                 }}> 
                 <ArrowLeft />
               </button>
       </div>
+
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
         <img
           src={

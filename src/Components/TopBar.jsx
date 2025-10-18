@@ -91,7 +91,7 @@ useEffect(() => {
         </div>
 
         {/* Story Avatars */}
-        <div className="flex overflow-x-auto no-scrollbar px-4 py-3 gap-4">
+        <div className="flex overflow-x-auto no-scrollbar px-4 py-1 gap-4">
           {/* Your Story */}
           <div
             className="flex flex-col items-center relative flex-shrink-0"

@@ -14,10 +14,10 @@ const PostedMemeCard = ({ memes, likedMemes, comments, users }) => {
   useEffect(() => {
     // Shuffle logic using Fisher-Yates
     const shuffled = [...memes];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
+    // for (let i = shuffled.length - 1; i > 0; i--) {
+    //   const j = Math.floor(Math.random() * (i + 1));
+    //   [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    // }
     setShuffledMemes(shuffled);
   }, [memes]);
 

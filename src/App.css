@@ -19,8 +19,9 @@ body {
 
 /* Thin scrollbar */
 .scrollbar-thin {
-  scrollbar-width: thin;               /* Firefox */
-  scrollbar-color: #888 transparent;   /* Firefox */
+  scrollbar-width: thin;               
+  scrollbar-color: #888 transparent; 
+  -webkit-overflow-scrolling: touch !important;  
 }
 
 .scrollbar-thin::-webkit-scrollbar {

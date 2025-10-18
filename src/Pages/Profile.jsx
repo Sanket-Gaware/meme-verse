@@ -4,16 +4,16 @@
   LogOut,
   MessageCircle,
   Share2Icon,
-  Trash2,
+  Trash2, 
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { deleteUserMeme, getUserMemes } from "../Store/memeSlice";
-import store  from "../Store/store";
-import { persister } from "../Store/store";
- 
+import store, { persister } from "../Store/store";
+
+
 const Profile = () => {
   const username = localStorage.getItem("username");
   const { users, userMemes } = useSelector((state) => state.meme);
@@ -67,7 +67,6 @@ const Profile = () => {
     followers: 1200,
     following: 180,
   };
-
   const showLogoutToast = () => {
     toast.custom((t) => (
       <div

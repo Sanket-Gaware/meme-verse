@@ -412,9 +412,13 @@ const fetchAllSendReq = async () => {
                               {user.fullname}
                             </p>
                             <p className="text-sm text-gray-500 dark:text-red-500 truncate">
-                              {home === true
-                                ? user.username
-                                : user.lastMsg || "No message yet"}
+                              {path == "/messages" ? 
+                                (home === true
+                                  ? user.username
+                                  : user.lastMsg || "No message yet"
+                                  ) :
+                                (user.username)
+                              }
                             </p>
                           </div>
                         </div>
@@ -447,7 +451,7 @@ const fetchAllSendReq = async () => {
                   key={user._id}
                   className="flex justify-between items-center my-3 cursor-pointer "
                   onClick={() => (path == "/messages" ? handleUserClick(user._id) : handleViewProfile(user.username))}
-                >
+                  >
                   <div className="flex gap-3 items-center">
                     <img
                       className="h-12 w-12 rounded-full aspect-square"
@@ -459,9 +463,13 @@ const fetchAllSendReq = async () => {
                         {user.fullname}
                       </p>
                       <p className="text-sm text-gray-500 dark:text-red-500">
-                        {home === true
-                          ? user.username
-                          : user.lastMsg || "No message yet"}
+                        {path == "/messages" ? 
+                          (home === true
+                            ? user.username
+                            : user.lastMsg || "No message yet"
+                            ) :
+                          (user.username)
+                        }
                       </p>
                     </div>
                   </div>
@@ -502,9 +510,13 @@ const fetchAllSendReq = async () => {
                               {user.fullname}
                             </p>
                             <p className="text-sm text-gray-500 dark:text-red-500 truncate">
-                              {home === true
-                                ? user.username
-                                : user.lastMsg || "No message yet"}
+                              {path == "/messages" ? 
+                                (home === true
+                                  ? user.username
+                                  : user.lastMsg || "No message yet"
+                                  ) :
+                                (user.username)
+                              }
                             </p>
                           </div>
                         </div>
@@ -529,7 +541,7 @@ const fetchAllSendReq = async () => {
           <div className="font-bold text-gray-500 tracking-wide pt-1 flex items-center px-5">
             Users
           </div>
-          <div className="px-2 mt-1 max-h-[300px] overflow-y-auto scrollbar-thin">
+          <div className="px-2 mt-1 max-h-[300px] overflow-y-scroll scrollbar-thin ">
             {(path == "/messages" ? sortedUsers : usersWithoutfriends)?.map(
               (user) => (
                 <div
@@ -551,9 +563,13 @@ const fetchAllSendReq = async () => {
                           {user.fullname}
                         </p>
                         <p className="text-sm text-gray-500 dark:text-red-500 truncate">
-                          {home === true
-                            ? user.username
-                            : user.lastMsg || "No message yet"}
+                          {path == "/messages" ? 
+                            (home === true
+                              ? user.username
+                              : user.lastMsg || "No message yet"
+                              ) :
+                            (user.username)
+                          }
                         </p>
                       </div>
                     </div>
