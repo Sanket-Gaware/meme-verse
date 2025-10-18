@@ -157,9 +157,16 @@ const handleFileChange = async (e) => {
   const file = e.target.files[0];
   if (!file) return;
 
+  
+
+   if (!file.type.startsWith("image/")) {
+    setShowModal(true); 
+    setPreview(file);
+    setMedia(file);
+      return;
+    }
   setIsProcessing(true);   // Start loader
   setShowModal(true);      // Show modal immediately
-
   try {
     const options = {
       maxSizeMB: 0.08,
