@@ -11,8 +11,8 @@ import {
 import { NavLink, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import store from "../Store/store";
-import { persister } from "../Store/store";
+import store, { persister } from "../Store/store";
+
 
 function Sidebar() {
   const navigate = useNavigate();
