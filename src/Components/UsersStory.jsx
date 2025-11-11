@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, CircleX } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllStories } from "../Store/memeSlice";
 import axios from 'axios';
- 
+   
 const UsersStory = ({ user, onClose }) => {
   const [current, setCurrent] = useState(0);
   const [progress, setProgress] = useState(0);

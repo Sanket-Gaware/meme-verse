@@ -7,7 +7,7 @@ import UsersStory from "./UsersStory";
 import AddStory from "./AddStory";
 import axios from 'axios';
  import { setAllStories } from "../Store/memeSlice";
-
+  
 const TopBar = ({ currentUser, users, username }) => {
   const navigate = useNavigate(); 
   const dispatch = useDispatch();
