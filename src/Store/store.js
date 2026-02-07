@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import memeReducer from "./memeSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-
+       
 const persistConfig = {
   //persis configuration
   key: "root",
